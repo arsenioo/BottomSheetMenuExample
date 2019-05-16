@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="menu_button_height">@dimen/abc_alert_dialog_button_bar_height</dimen>
+</resources>

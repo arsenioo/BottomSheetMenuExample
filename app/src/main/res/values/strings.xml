@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">BottomSheetMenuExample</string>
+    <string name="new_g">New Deal</string>
+    <string name="undo">Undo</string>
+    <string name="solution">Solution</string>
+    <string name="graph_progress">Progress</string>
+    <string name="options">Options</string>
 </resources>
