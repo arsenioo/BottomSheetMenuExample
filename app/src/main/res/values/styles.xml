@@ -9,7 +9,7 @@
     </style>
 
     <style name="MenuButton">
-        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:gravity">center</item>
         <item name="android:layout_gravity">center</item>
@@ -30,7 +30,7 @@
     </style>
 
     <style name="MenuButtonCaption">
-        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:gravity">center</item>
         <item name="android:layout_marginBottom">10dp</item>

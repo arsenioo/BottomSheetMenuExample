@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
 
     app:behavior_hideable="false"
-    app:behavior_peekHeight="0dp"
+    app:behavior_peekHeight="20dp"
     app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
     <LinearLayout android:id="@+id/topPart"

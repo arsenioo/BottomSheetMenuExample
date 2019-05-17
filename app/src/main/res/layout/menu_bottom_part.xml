@@ -8,8 +8,11 @@
     android:padding="@dimen/abc_dialog_list_padding_bottom_no_buttons"
     app:flexDirection="row"
     app:flexWrap="nowrap"
+    app:alignItems="flex_end"
     app:justifyContent="space_around"
-    tools:ignore="PrivateResource">
+    app:alignContent="flex_end"
+    tools:ignore="PrivateResource"
+    android:background="@color/menuBackgroundColor">
 
     <RelativeLayout
         android:id="@+id/first_menu_button"
@@ -62,6 +65,7 @@
     <RelativeLayout
         android:id="@+id/fourth_menu_button"
         style="@style/MenuButton"
+        app:layout_wrapBefore="true"
         android:onClick="onFourthButtonClick">
         <TextView
             android:id="@+id/fourth_menu_item_icon"
@@ -111,7 +115,7 @@
         android:id="@+id/seventh_menu_button"
         style="@style/MenuButton"
         android:onClick="onSeventhButtonClick"
-        android:visibility="invisible">
+        android:visibility="gone">
         <TextView
             android:id="@+id/seventh_menu_item_icon"
             android:background="@drawable/ic_menu_send_log"

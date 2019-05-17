@@ -17,8 +17,8 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior;
  */
 
 public class BottomSheetMenu extends CoordinatorLayout {
-    private View _topView;
-    private View _bottomView;
+    private ViewGroup _topView;
+    private ViewGroup _bottomView;
     private int topViewHeight = 0;
     private BottomSheetBehavior bottomSheetBehavior;
     private View menuControlButton;
@@ -34,6 +34,8 @@ public class BottomSheetMenu extends CoordinatorLayout {
         super(context);
         LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         layoutInflater.inflate(R.layout.bottom_menu, BottomSheetMenu.this, true);
+        _topView = findViewById(R.id.topPart);
+        _bottomView = findViewById(R.id.bottomPart);
     }
 
     public BottomSheetMenu(Context context, @Nullable AttributeSet attrs) {
@@ -52,9 +54,8 @@ public class BottomSheetMenu extends CoordinatorLayout {
 
     public void setBottomView(View view)
     {
-        if (_bottomView != null) this.removeView(_bottomView);
-        _bottomView = view;
-        if (view != null) this.addView(view, -1, matchParentParams);
+        _bottomView.removeAllViews();
+        _bottomView.addView(view);
         bottomSheetBehavior = BottomSheetBehavior.from(findViewById(R.id.bottomSheetLayout));
         bottomSheetBehavior.setPeekHeight(topViewHeight);
         currentState = BottomSheetBehavior.STATE_EXPANDED;
@@ -62,9 +63,8 @@ public class BottomSheetMenu extends CoordinatorLayout {
 
     public void setTopView(View view)
     {
-        if (_topView != null) this.removeView(_topView);
-        _topView = view;
-        if (view != null) this.addView(view, 0, matchParentParams);
+        _topView.removeAllViews();
+        _topView.addView(view);
         _topView.measure(0,0);
         topViewHeight = _topView.getMeasuredHeight();
         if(bottomSheetBehavior != null) bottomSheetBehavior.setPeekHeight(topViewHeight);
