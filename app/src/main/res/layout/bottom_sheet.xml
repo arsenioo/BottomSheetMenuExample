@@ -10,7 +10,7 @@
     app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
     <LinearLayout android:id="@+id/topPart"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:orientation="horizontal"
         android:gravity="bottom"
         android:layout_height="wrap_content"
@@ -20,13 +20,13 @@
     </LinearLayout>
     <LinearLayout
         android:id="@+id/bottomPart"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/topPart"
         android:orientation="horizontal"
-        android:background="@color/menuBackgroundColor"
         android:focusable="true"
-        android:focusableInTouchMode="true">
+        android:focusableInTouchMode="true"
+        android:background="@color/menuBackgroundColor">
     </LinearLayout>
 
 </RelativeLayout>

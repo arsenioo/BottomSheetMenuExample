@@ -55,7 +55,8 @@ public class BottomSheetMenu extends CoordinatorLayout {
     public void setBottomView(View view)
     {
         _bottomView.removeAllViews();
-        _bottomView.addView(view);
+        _bottomView.addView(view, matchParentParams);
+        _bottomView.invalidate();
         bottomSheetBehavior = BottomSheetBehavior.from(findViewById(R.id.bottomSheetLayout));
         bottomSheetBehavior.setPeekHeight(topViewHeight);
         currentState = BottomSheetBehavior.STATE_EXPANDED;
@@ -64,7 +65,7 @@ public class BottomSheetMenu extends CoordinatorLayout {
     public void setTopView(View view)
     {
         _topView.removeAllViews();
-        _topView.addView(view);
+        _topView.addView(view, matchParentParams);
         _topView.measure(0,0);
         topViewHeight = _topView.getMeasuredHeight();
         if(bottomSheetBehavior != null) bottomSheetBehavior.setPeekHeight(topViewHeight);
