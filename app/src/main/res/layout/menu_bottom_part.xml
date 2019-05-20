@@ -9,7 +9,7 @@
     app:flexDirection="row"
     app:flexWrap="wrap"
     app:alignItems="flex_end"
-    app:justifyContent="space_evenly"
+    app:justifyContent="space_between"
     app:alignContent="flex_end">
 
     <RelativeLayout

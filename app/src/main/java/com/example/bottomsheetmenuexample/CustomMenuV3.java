@@ -10,6 +10,7 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.ShapeDrawable;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
@@ -302,7 +303,8 @@ public class CustomMenuV3 extends BottomSheetMenu implements View.OnClickListene
     }
 
 
-/*
+    final Rect menuRect = new Rect();
+
     @Override
     public boolean onInterceptTouchEvent(MotionEvent event)
     {
@@ -312,7 +314,7 @@ public class CustomMenuV3 extends BottomSheetMenu implements View.OnClickListene
         final int tapX = Math.round(event.getX());
         final int tapY = Math.round(event.getY());
 
-        mView.findViewById(R.id.custom_menu_table).getGlobalVisibleRect(menuRect);
+        findViewById(R.id.bottomPart).getGlobalVisibleRect(menuRect);
 
         boolean tapOnVisible = menuRect.contains(tapX, tapY);
 
@@ -322,14 +324,12 @@ public class CustomMenuV3 extends BottomSheetMenu implements View.OnClickListene
             tapOnVisible |= menuRect.contains(tapX, tapY);
         }
 
-        if (tapOnVisible) return false;
-
-        if (mIsShowing) return true;
-
-        // Process a touch in invisible area in a hidden state
-        return mListener != null && mListener.onFilterTouchEvent(event);
-
+        if (tapOnVisible)
+        {
+            setHideAlarm();
+            return false;
+        }
+        hide();
+        return true;
     }
-*/
-
 }

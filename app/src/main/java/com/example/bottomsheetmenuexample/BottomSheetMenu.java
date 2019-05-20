@@ -22,7 +22,7 @@ public class BottomSheetMenu extends CoordinatorLayout  {
     private int topViewHeight = 0;
     private BottomSheetBehavior bottomSheetBehavior;
     public int currentState;
-    private boolean mIsShowing = false;
+    public boolean mIsShowing = false;
     Handler handler = new Handler();
 
     final LayoutParams matchParentParams =
@@ -70,7 +70,7 @@ public class BottomSheetMenu extends CoordinatorLayout  {
         if(bottomSheetBehavior != null) bottomSheetBehavior.setPeekHeight(topViewHeight);
     }
 
-    private void setHideAlarm()
+    public void setHideAlarm()
     {
         handler.removeCallbacks(hideMenu);
         handler.postDelayed(hideMenu, /*D.HIDE_MENU_TIMEOUT * 1000*/ 4000);

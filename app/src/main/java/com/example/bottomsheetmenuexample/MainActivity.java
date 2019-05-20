@@ -3,6 +3,7 @@ package com.example.bottomsheetmenuexample;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
@@ -30,13 +31,13 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void onFirstButtonClick(View v){}
-    public void onSecondButtonClick(View v){}
-    public void onThirdButtonClick(View v){}
-    public void onFourthButtonClick(View v){}
-    public void onFifthButtonClick(View v){}
-    public void onSixthButtonClick(View v){}
-    public void onSeventhButtonClick(View v){}
+    public void onFirstButtonClick(View v) {Toast.makeText(this, "NewGame", Toast.LENGTH_LONG).show();}
+    public void onSecondButtonClick(View v){Toast.makeText(this, "Undo", Toast.LENGTH_LONG).show();}
+    public void onThirdButtonClick(View v){Toast.makeText(this, "Hints", Toast.LENGTH_LONG).show();}
+    public void onFourthButtonClick(View v){Toast.makeText(this, "Options", Toast.LENGTH_LONG).show();}
+    public void onFifthButtonClick(View v){Toast.makeText(this, "Solution", Toast.LENGTH_LONG).show();}
+    public void onSixthButtonClick(View v){Toast.makeText(this, "Progress", Toast.LENGTH_LONG).show();}
+    public void onSeventhButtonClick(View v){Toast.makeText(this, "Debug", Toast.LENGTH_LONG).show();}
     public void onExitButtonClick(View v)
     {
         finish();
