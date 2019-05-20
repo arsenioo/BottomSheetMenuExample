@@ -23,8 +23,11 @@ public class MainActivity extends AppCompatActivity {
 
     private void createMenu()
     {
-        mMenu = new CustomMenuV3(this);
-        rootLayout.addView(mMenu);
+        if (mMenu == null)
+        {
+            mMenu = new CustomMenuV3(this, rootLayout);
+            rootLayout.addView(mMenu);
+        }
     }
 
     public void onFirstButtonClick(View v){}

@@ -1,13 +1,20 @@
 package com.example.bottomsheetmenuexample;
 
 import android.content.Context;
-import android.graphics.Point;
-import android.view.Display;
+import android.content.res.Resources;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
+import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
+import android.graphics.drawable.ShapeDrawable;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.view.animation.AlphaAnimation;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import androidx.asynclayoutinflater.view.AsyncLayoutInflater;
 
@@ -16,17 +23,21 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior;
 
 public class CustomMenuV3 extends BottomSheetMenu implements View.OnClickListener
 {
+    final static PorterDuffColorFilter _menuSelectionFilter = new PorterDuffColorFilter(0xFFFFFF00, PorterDuff.Mode.SRC_IN);
     private View menuControlButton;
     private View exitButton;
-    private boolean _menuButtonEnabled;
-    private ViewGroup parent;
+    private boolean _menuButtonEnabled = true;
     private View topView;
     private View bottomView;
+    private  ViewGroup parent;
+    private int mMenuButtonHeight;
+    private int mMenuButtonWidth;
 
 
-    public CustomMenuV3(final Context context)
+    public CustomMenuV3(final Context context, ViewGroup parentView)
     {
         super(context);
+        parent = parentView;
         AsyncLayoutInflater mLayoutInflater = new AsyncLayoutInflater(context);
         final AsyncLayoutInflater.OnInflateFinishedListener topViewCallback = new AsyncLayoutInflater.OnInflateFinishedListener()
         {
@@ -34,27 +45,45 @@ public class CustomMenuV3 extends BottomSheetMenu implements View.OnClickListene
             public void onInflateFinished(View view, int resid, ViewGroup parent)
             {
                 topView = view;
+                initMenuControlButton();
                 setTopView(view);
+                drawBird(0);
             }
         };
         final AsyncLayoutInflater.OnInflateFinishedListener bottomViewCallback = new AsyncLayoutInflater.OnInflateFinishedListener()
         {
             @Override
-            public void onInflateFinished(View view, int resid, ViewGroup parent)
+            public void onInflateFinished(View view, int resid, ViewGroup p)
             {
                 bottomView = view;
                 setBottomView(view);
-                WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-                Display display = wm.getDefaultDisplay();
-                Point size = new Point();
-                display.getSize(size);
-                int width = size.x;
-                int height = size.y;
+                int width = parent.getMeasuredWidth();
+                int height = parent.getMeasuredHeight();
                 applyRotation(height, width);
             }
         };
         mLayoutInflater.inflate(R.layout.menu_top_part, null, topViewCallback);
         mLayoutInflater.inflate(R.layout.menu_bottom_part, null, bottomViewCallback);
+    }
+
+    private void initMenuControlButton()
+    {
+        menuControlButton = topView.findViewById(R.id.closeBut);
+        menuControlButton.setVisibility(_menuButtonEnabled?View.VISIBLE:View.GONE);
+        menuControlButton.setOnClickListener(this);
+        LinearLayout.LayoutParams params = (LinearLayout.LayoutParams)menuControlButton.getLayoutParams();
+        mMenuButtonHeight = params.height;
+        mMenuButtonWidth = params.width = (int)(mMenuButtonHeight * 1.2);
+        menuControlButton.setLayoutParams(params);
+        menuControlButton.setOnFocusChangeListener(new OnFocusChangeListener()
+        {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus)
+            {
+                ImageView view = parent.findViewById(R.id.closeButImage);
+                if (view != null) handleSelectionChange(view, hasFocus);
+            }
+        });
     }
 
     @Override
@@ -77,9 +106,10 @@ public class CustomMenuV3 extends BottomSheetMenu implements View.OnClickListene
         bottomView.requestLayout();
     }
 
-/*    private void drawBird(float slideOffset)
+    private void drawBird(float slideOffset)
     {
         if(menuControlButton == null || menuControlButton.getVisibility() != View.VISIBLE) return;
+
         Drawable[] layers = new Drawable[2];
         Resources r = getResources();
         final float birdWidth = mMenuButtonWidth / 2;
@@ -90,7 +120,7 @@ public class CustomMenuV3 extends BottomSheetMenu implements View.OnClickListene
         ImageView image = menuControlButton.findViewById(R.id.closeButImage);
         image.setImageDrawable(layerDrawable);
         image.requestLayout();
-    }*/
+    }
 
 /*    private void drawExitButton(float slideOffset)
     {
@@ -122,7 +152,7 @@ public class CustomMenuV3 extends BottomSheetMenu implements View.OnClickListene
         exitButton = null;
     }
 
-/*    final Rect zeroRect = new Rect();
+    final Rect zeroRect = new Rect();
 
     private ShapeDrawable paintDrawable(float offset, float width, float height, int color, int strokeWidth, boolean shadowEnabled)
     {
@@ -138,30 +168,8 @@ public class CustomMenuV3 extends BottomSheetMenu implements View.OnClickListene
 
         drawable.setPadding(zeroRect);                // BugFix for SFA-222, don't change this line:
         return drawable;
-    }*/
+    }
 
-/*    @Override
-    public void onClick(View v)
-    {
-        switch (v.getId())
-        {
-            case R.id.closeBut:
-                if (currentState == BottomSheetBehavior.STATE_COLLAPSED)
-                {
-                    show();
-                }
-                if (currentState == BottomSheetBehavior.STATE_EXPANDED) hide();
-                break;
-
-            case R.id.exitButton:
-                if (D.DEBUG) Log.d("Bottom Sheet Behaviour", "ClickExit");
-                CustomMenuItem cmi = new CustomMenuItem();
-                cmi.setId(BottomMenuHandler.EXIT_MENU_ID);
-                mListener.MenuItemSelectedEvent(cmi);
-                if (mHideOnSelect) hide();
-                break;
-        }
-    }*/
     @Override
     public void show()
     {
@@ -203,8 +211,8 @@ public class CustomMenuV3 extends BottomSheetMenu implements View.OnClickListene
     public void bottomSheetOnSlide(View bottomSheet, float slideOffset)
     {
         super.bottomSheetOnSlide(bottomSheet, slideOffset);
-/*        drawBird(slideOffset);
-        drawExitButton(slideOffset);*/
+        drawBird(slideOffset);
+        /*drawExitButton(slideOffset);*/
     }
 
     private void setFadeOutAlarm()
@@ -215,7 +223,7 @@ public class CustomMenuV3 extends BottomSheetMenu implements View.OnClickListene
 
 
 
-   /* private void handleSelectionChange(View view, boolean isFocused)
+    private void handleSelectionChange(View view, boolean isFocused)
     {
         if (view == null) return;
 
@@ -229,7 +237,7 @@ public class CustomMenuV3 extends BottomSheetMenu implements View.OnClickListene
             if (view instanceof ImageView) ((ImageView)view).clearColorFilter();
             else view.getBackground().clearColorFilter();
         }
-    }*/
+    }
 
     private void fadeButtonIn()
     {
