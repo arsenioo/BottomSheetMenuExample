@@ -10,20 +10,21 @@
     android:focusable="true"
     android:focusableInTouchMode="false"
     android:gravity="center"
-    android:layout_gravity="top|right">
+    android:layout_gravity="top|right"
+    android:onClick="onExitButtonClick">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="?selectableItemBackground">
 
-    <androidx.appcompat.widget.AppCompatImageView
-        android:id="@+id/exitButImage"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_margin="12dp"
-        app:srcCompat="@drawable/ic_menu_quit"
-        android:layout_gravity="center"
-        />
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/exitButImage"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_margin="12dp"
+            app:srcCompat="@drawable/ic_menu_quit"
+            android:layout_gravity="center"
+            />
     </LinearLayout>
 </FrameLayout>

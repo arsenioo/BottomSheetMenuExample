@@ -37,5 +37,9 @@ public class MainActivity extends AppCompatActivity {
     public void onFifthButtonClick(View v){}
     public void onSixthButtonClick(View v){}
     public void onSeventhButtonClick(View v){}
+    public void onExitButtonClick(View v)
+    {
+        finish();
+    }
 
 }

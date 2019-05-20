@@ -13,6 +13,7 @@ import android.graphics.drawable.ShapeDrawable;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
@@ -39,6 +40,17 @@ public class CustomMenuV3 extends BottomSheetMenu implements View.OnClickListene
         super(context);
         parent = parentView;
         AsyncLayoutInflater mLayoutInflater = new AsyncLayoutInflater(context);
+        final AsyncLayoutInflater.OnInflateFinishedListener exitButtonViewCallback = new AsyncLayoutInflater.OnInflateFinishedListener()
+        {
+            @Override
+            public void onInflateFinished(View view, int resid, ViewGroup parent)
+            {
+                exitButton = view;
+                parent.addView(exitButton);
+                drawExitButton(0);
+            }
+        };
+
         final AsyncLayoutInflater.OnInflateFinishedListener topViewCallback = new AsyncLayoutInflater.OnInflateFinishedListener()
         {
             @Override
@@ -62,6 +74,8 @@ public class CustomMenuV3 extends BottomSheetMenu implements View.OnClickListene
                 applyRotation(height, width);
             }
         };
+
+        mLayoutInflater.inflate(R.layout.menu_exit_button, parent, exitButtonViewCallback);
         mLayoutInflater.inflate(R.layout.menu_top_part, null, topViewCallback);
         mLayoutInflater.inflate(R.layout.menu_bottom_part, null, bottomViewCallback);
     }
@@ -122,14 +136,9 @@ public class CustomMenuV3 extends BottomSheetMenu implements View.OnClickListene
         image.requestLayout();
     }
 
-/*    private void drawExitButton(float slideOffset)
+    private void drawExitButton(float slideOffset)
     {
-        if(exitButton == null)
-        {
-            exitButton = mLayoutInflater.inflate(R.layout.menu_exit_button, parent, false);
-            exitButton.setOnClickListener(this);
-            parent.addView(exitButton);
-        }
+        if(exitButton == null) return;
         int width = exitButton.getMeasuredWidth();
         if (width == 0)
         {
@@ -143,14 +152,14 @@ public class CustomMenuV3 extends BottomSheetMenu implements View.OnClickListene
         exitButton.invalidate();
         exitButton.requestLayout();
         exitButton.bringToFront();
-    }*/
+    }
 
-    public void removeExitButton()
+/*    public void removeExitButton()
     {
         if (exitButton == null) return;
         parent.removeView(exitButton);
-        exitButton = null;
-    }
+
+    }*/
 
     final Rect zeroRect = new Rect();
 
@@ -199,7 +208,7 @@ public class CustomMenuV3 extends BottomSheetMenu implements View.OnClickListene
         }
         else if(newState == BottomSheetBehavior.STATE_COLLAPSED)
         {
-            removeExitButton();
+          //  removeExitButton();
         }
         else
         {
@@ -212,7 +221,7 @@ public class CustomMenuV3 extends BottomSheetMenu implements View.OnClickListene
     {
         super.bottomSheetOnSlide(bottomSheet, slideOffset);
         drawBird(slideOffset);
-        /*drawExitButton(slideOffset);*/
+        drawExitButton(slideOffset);
     }
 
     private void setFadeOutAlarm()
@@ -288,14 +297,6 @@ public class CustomMenuV3 extends BottomSheetMenu implements View.OnClickListene
                     show();
                 }
                 if (currentState == BottomSheetBehavior.STATE_EXPANDED) hide();
-                break;
-
-            case R.id.exitButton:
-/*
-                CustomMenuItem cmi = new CustomMenuItem();
-                cmi.setId(BottomMenuHandler.EXIT_MENU_ID);
-                mListener.MenuItemSelectedEvent(cmi);
-                if (mHideOnSelect) hide();*/
                 break;
         }
     }
