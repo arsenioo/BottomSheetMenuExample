@@ -1,7 +1,6 @@
 package com.example.bottomsheetmenuexample;
 
 import android.content.Context;
-import android.os.Handler;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,7 +22,6 @@ public class BottomSheetMenu extends CoordinatorLayout  {
     private BottomSheetBehavior bottomSheetBehavior;
     public int currentState;
     public boolean mIsShowing = false;
-    Handler handler = new Handler();
 
     final LayoutParams matchParentParams =
         new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
@@ -72,8 +70,8 @@ public class BottomSheetMenu extends CoordinatorLayout  {
 
     public void setHideAlarm()
     {
-        handler.removeCallbacks(hideMenu);
-        handler.postDelayed(hideMenu, /*D.HIDE_MENU_TIMEOUT * 1000*/ 4000);
+        removeCallbacks(hideMenu);
+        postDelayed(hideMenu, /*D.HIDE_MENU_TIMEOUT * 1000*/ 4000);
     }
 
     public void bottomSheetOnStateChanged(View bottomSheet, int newState)

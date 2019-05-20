@@ -4,12 +4,14 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Path;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.shapes.PathShape;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +20,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import androidx.annotation.NonNull;
 import androidx.asynclayoutinflater.view.AsyncLayoutInflater;
 
 import com.google.android.flexbox.FlexboxLayout;
@@ -205,7 +208,7 @@ public class CustomMenuV3 extends BottomSheetMenu implements View.OnClickListene
         super.bottomSheetOnStateChanged(bottomSheet, newState);
         if (newState == BottomSheetBehavior.STATE_EXPANDED)
         {
-            setFadeOutAlarm();
+            fadeButtonOutWithDelay();
         }
         else if(newState == BottomSheetBehavior.STATE_COLLAPSED)
         {
@@ -225,14 +228,6 @@ public class CustomMenuV3 extends BottomSheetMenu implements View.OnClickListene
         drawExitButton(slideOffset);
     }
 
-    private void setFadeOutAlarm()
-    {
-        handler.removeCallbacks(fadeButtonOut);
-        handler.postDelayed(fadeButtonOut, /*D.FADEOUT_MENU_BUTTON_TIMEOUT * 1000*/ 4000);
-    }
-
-
-
     private void handleSelectionChange(View view, boolean isFocused)
     {
         if (view == null) return;
@@ -249,42 +244,32 @@ public class CustomMenuV3 extends BottomSheetMenu implements View.OnClickListene
         }
     }
 
-    private void fadeButtonIn()
+    private void fadeAnimation(float finalAlpha)
     {
         if (android.os.Build.VERSION.SDK_INT < 16 || menuControlButton == null || menuControlButton.getVisibility() != View.VISIBLE) return;
         ImageView image = menuControlButton.findViewById(R.id.closeButImage);
         if (image == null) return;
-        AlphaAnimation animation1 = new AlphaAnimation(image.getAlpha(), 1.0f);
+        AlphaAnimation animation1 = new AlphaAnimation(image.getAlpha(), finalAlpha);
         animation1.setDuration(500);
-        image.setAlpha(1f);
+        image.setAlpha(finalAlpha);
         animation1.setFillAfter(true);
         image.startAnimation(animation1);
     }
 
-    private void fadeButtonOut()
-    {
-        if (android.os.Build.VERSION.SDK_INT < 16 || menuControlButton == null || menuControlButton.getVisibility() != View.VISIBLE) return;
-        ImageView image = menuControlButton.findViewById(R.id.closeButImage);
-        if (image == null) return;
-        AlphaAnimation animation1 = new AlphaAnimation(image.getAlpha(), 0.5f);
-        animation1.setDuration(500);
-        image.setAlpha(0.5f);
-        animation1.setFillAfter(true);
-        image.startAnimation(animation1);
-    }
-
-    private  Runnable fadeButtonOut = new Runnable()
-    {
+    final Runnable fadeButtonOut = new Runnable() {
         @Override
-        public  void run()
-        {
-            fadeButtonOut();
+        public void run() {
+            fadeAnimation(0.5f);
         }
     };
 
-    public void pause()
-    {
-        handler.removeCallbacksAndMessages(null);
+    private void fadeButtonIn() {
+        fadeAnimation(1.0f);
+    }
+
+    private void fadeButtonOutWithDelay() {
+        removeCallbacks(fadeButtonOut);
+        postDelayed(fadeButtonOut, /*D.FADEOUT_MENU_BUTTON_TIMEOUT * 1000*/ 4000);
     }
 
     @Override
@@ -331,5 +316,31 @@ public class CustomMenuV3 extends BottomSheetMenu implements View.OnClickListene
         }
         hide();
         return true;
+    }
+
+    /**
+     * Wrapper around {@link PathShape}
+     * that creates a shape with a triangular path (pointing up or down).
+     */
+    static class TriangleShape extends PathShape
+    {
+        TriangleShape(@NonNull Path path, float stdWidth, float stdHeight) {
+            super(path, stdWidth, stdHeight);
+        }
+
+        static TriangleShape create(float width, float height, float phase)
+        {
+            Path triangularPath = new Path();
+            phase = (float) Math.sin(Math.PI / 2. * phase); //for better "bird" rotation simulation
+            float yEnds = height * (1- phase);
+            float yCenter = height * phase;
+
+                triangularPath.moveTo(0, yEnds);
+                triangularPath.lineTo(width / 2, yCenter);
+                triangularPath.lineTo(width, yEnds);
+
+            return new TriangleShape(triangularPath, width, height);
+        }
+
     }
 }
