@@ -1,6 +1,9 @@
 package com.example.bottomsheetmenuexample;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -12,6 +15,10 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.PathShape;
+import android.os.BatteryManager;
+import android.text.format.DateFormat;
+import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,30 +26,44 @@ import android.view.animation.AlphaAnimation;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.asynclayoutinflater.view.AsyncLayoutInflater;
+import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
 import com.google.android.flexbox.FlexboxLayout;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 
+import java.util.Calendar;
+import java.util.Date;
+
 public class CustomMenuV3 extends BottomSheetMenu implements View.OnClickListener
 {
-    final static PorterDuffColorFilter _menuSelectionFilter = new PorterDuffColorFilter(0xFFFFFF00, PorterDuff.Mode.SRC_IN);
+    private static final int NEW_GAME_BUTTON_TEXT = R.id.first_menu_item_caption;
+
+    private static final int BATTERY_BUTTON_ICON = R.id.third_menu_item_icon;
+    private static final int BATTERY_BUTTON_TEXT = R.id.third_menu_item_caption;
     private View menuControlButton;
     private View exitButton;
-    private boolean _menuButtonEnabled = true;
+    private boolean _menuButtonEnabled;
     private View topView;
     private View bottomView;
     private  ViewGroup parent;
     private int mMenuButtonHeight;
     private int mMenuButtonWidth;
+    private boolean isLefthandled;
+    private Context mContext;
 
 
-    public CustomMenuV3(final Context context, ViewGroup parentView)
+    public CustomMenuV3(final Context context, ViewGroup parentView, boolean leftHandled, boolean menuButtonEnabled)
     {
         super(context);
+        mContext = context;
         parent = parentView;
+        isLefthandled = leftHandled;
+        _menuButtonEnabled = menuButtonEnabled;
+
         AsyncLayoutInflater mLayoutInflater = new AsyncLayoutInflater(context);
         final AsyncLayoutInflater.OnInflateFinishedListener exitButtonViewCallback = new AsyncLayoutInflater.OnInflateFinishedListener()
         {
@@ -88,6 +109,7 @@ public class CustomMenuV3 extends BottomSheetMenu implements View.OnClickListene
                         }
                     });
                 }
+                context.registerReceiver(mBatteryInfoReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
             }
         };
 
@@ -99,7 +121,7 @@ public class CustomMenuV3 extends BottomSheetMenu implements View.OnClickListene
     private void initMenuControlButton()
     {
         menuControlButton = topView.findViewById(R.id.closeBut);
-        menuControlButton.setVisibility(_menuButtonEnabled?View.VISIBLE:View.GONE);
+        updateMenuButtonVisibility();
         menuControlButton.setOnClickListener(this);
         LinearLayout.LayoutParams params = (LinearLayout.LayoutParams)menuControlButton.getLayoutParams();
         mMenuButtonHeight = params.height;
@@ -155,6 +177,7 @@ public class CustomMenuV3 extends BottomSheetMenu implements View.OnClickListene
 
         FrameLayout.LayoutParams params = (FrameLayout.LayoutParams)exitButton.getLayoutParams();
         params.topMargin =  (int)(-1 * width * (1 - slideOffset));
+        params.gravity = Gravity.TOP | (isLefthandled?Gravity.LEFT:Gravity.RIGHT);
         exitButton.setLayoutParams(params);
         exitButton.invalidate();
         exitButton.requestLayout();
@@ -175,7 +198,6 @@ public class CustomMenuV3 extends BottomSheetMenu implements View.OnClickListene
         if (shadowEnabled) arrowPaint.setShadowLayer(strokeWidth / 4, 0, 0, Color.BLACK);
         drawable.setIntrinsicWidth((int)width);
         drawable.setIntrinsicHeight((int)height);
-
         drawable.setPadding(zeroRect);                // BugFix for SFA-222, don't change this line:
         return drawable;
     }
@@ -186,8 +208,6 @@ public class CustomMenuV3 extends BottomSheetMenu implements View.OnClickListene
         super.show();
         fadeButtonIn();
         if (menuControlButton != null)  menuControlButton.clearFocus();
-       /* TableLayout t = mView.findViewById(R.id.custom_menu_table);
-        menuControlButton.setNextFocusRightId(t.getChildAt(0).findViewById(R.id.custom_menu_item_icon).getId());*/
     }
 
     @Override
@@ -207,10 +227,6 @@ public class CustomMenuV3 extends BottomSheetMenu implements View.OnClickListene
         {
             fadeButtonOutWithDelay();
         }
-        else if(newState == BottomSheetBehavior.STATE_COLLAPSED)
-        {
-          //  removeExitButton();
-        }
         else
         {
             fadeButtonIn();
@@ -223,22 +239,6 @@ public class CustomMenuV3 extends BottomSheetMenu implements View.OnClickListene
         super.bottomSheetOnSlide(bottomSheet, slideOffset);
         drawBird(slideOffset);
         drawExitButton(slideOffset);
-    }
-
-    private void handleSelectionChange(View view, boolean isFocused)
-    {
-        if (view == null) return;
-
-        if (isFocused)
-        {
-            if (view instanceof ImageView) ((ImageView)view).setColorFilter(_menuSelectionFilter);
-            else view.getBackground().setColorFilter(_menuSelectionFilter);
-        }
-        else
-        {
-            if (view instanceof ImageView) ((ImageView)view).clearColorFilter();
-            else view.getBackground().clearColorFilter();
-        }
     }
 
     private void fadeAnimation(float finalAlpha)
@@ -308,12 +308,96 @@ public class CustomMenuV3 extends BottomSheetMenu implements View.OnClickListene
 
         if (tapOnVisible)
         {
-            ;
             return false;
         }
         hide();
         return true;
     }
+
+    public void setLaftHandled(boolean leftHandled)
+    {
+        isLefthandled = leftHandled;
+    }
+
+    public void setMenuButtonEnabled(boolean enabled)
+    {
+        _menuButtonEnabled = enabled;
+        updateMenuButtonVisibility();
+    }
+
+    private void updateMenuButtonVisibility()
+    {
+        menuControlButton.setVisibility(_menuButtonEnabled?View.VISIBLE:View.GONE);
+    }
+
+    private BroadcastReceiver mBatteryInfoReceiver = new BroadcastReceiver()
+    {
+        @Override
+        public void onReceive(Context context, Intent intent)
+        {
+            String action = intent.getAction();
+            if (Intent.ACTION_BATTERY_CHANGED.equals(action))
+            {
+                int level = intent.getIntExtra("level", 0);
+                int scale = intent.getIntExtra("scale", 100);
+                float _batteryValue = (100.0f * level) / scale;
+                int status = intent.getIntExtra("status", BatteryManager.BATTERY_STATUS_UNKNOWN);
+                boolean _batteryCharging = (status == BatteryManager.BATTERY_STATUS_CHARGING);
+                updateBattery(_batteryValue, _batteryCharging);
+            }
+        }
+    };
+
+    public void updateBattery(float _batteryValue, boolean _batteryCharging)
+    {
+
+        TextView iconImage = bottomView.findViewById(BATTERY_BUTTON_ICON);
+        if (iconImage == null) return;
+        final float[] hsv = {_batteryValue * 1.2f, 1.0f, 0.9f};
+        final int batteryResource = _batteryCharging? R.drawable.ic_menu_battery_charge: R.drawable.ic_menu_battery_base;
+
+        final VectorDrawableCompat batteryDrawable = VectorDrawableCompat.create(mContext.getResources(), batteryResource, mContext.getTheme());
+        if (batteryDrawable != null) batteryDrawable.setColorFilter(new PorterDuffColorFilter(Color.HSVToColor(255, hsv), PorterDuff.Mode.SRC_IN));
+        iconImage.setBackgroundDrawable(batteryDrawable);
+
+        final int outValue = (int)(_batteryValue + 0.5f);
+        final float textSize = getResources().getDimensionPixelSize(R.dimen.menu_item_image_height) / 3.0f;
+        iconImage.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
+        iconImage.setTextColor(0xFF000000);
+
+        iconImage.setTextScaleX(outValue == 100? 0.85f: 1.0f);
+
+        final String iconText = _batteryCharging? "": outValue + "%";
+        iconImage.setText(iconText);
+
+        View itemText = bottomView.findViewById(BATTERY_BUTTON_TEXT);
+        ((TextView) itemText).setText(getCurrentTime());
+    }
+
+    public String getCurrentTime()
+    {
+        Calendar cal = Calendar.getInstance();
+        Date time = cal.getTime();
+        return DateFormat.getTimeFormat(mContext).format(time);
+    }
+
+/*    public void restoreMenuButtons()
+    {
+        if (!D.MULTIPLAY)
+        {
+            restoreMenuNewGame();
+            restoreMenuSolution();
+        }
+        else replaceMenuNewGameToEndGame();
+
+    }*/
+
+/*    public void replaceMenuNewGameToEndGame(){replaceMenuItem(NEW_GAME_BUTTON,   getResources().getString(R.string.endGame));}
+    public void replaceMenuNewGameToResign(){replaceMenuItem(NEW_GAME_BUTTON,   getResources().getString(R.string.resign));}
+    public void replaceMenuNewGameToClaim(){replaceMenuItem(NEW_GAME_BUTTON,   getResources().getString(R.string.claim_victory));}
+    public void restoreMenuNewGame(){replaceMenuItem(NEW_GAME_BUTTON,   getResources().getString(R.string.new_g));}*/
+
+
 
     /**
      * Wrapper around {@link PathShape}

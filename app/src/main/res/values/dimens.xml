@@ -2,4 +2,5 @@
 <resources>
     <dimen name="menu_button_height">@dimen/abc_alert_dialog_button_bar_height</dimen>
     <dimen name="bird_stroke_width">2dp</dimen>
+    <dimen name="menu_item_image_height">@dimen/abc_alert_dialog_button_bar_height</dimen>
 </resources>
