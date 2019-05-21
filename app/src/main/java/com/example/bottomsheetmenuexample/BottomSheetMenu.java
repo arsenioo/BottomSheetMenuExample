@@ -56,7 +56,7 @@ public class BottomSheetMenu extends CoordinatorLayout  {
         bottomSheetBehavior = BottomSheetBehavior.from(findViewById(R.id.bottomSheetLayout));
         bottomSheetBehavior.setPeekHeight(topViewHeight);
         setBottomSheetCallback();
-        currentState = BottomSheetBehavior.STATE_EXPANDED;
+        currentState = BottomSheetBehavior.STATE_COLLAPSED;
     }
 
     public void setTopView(View view)

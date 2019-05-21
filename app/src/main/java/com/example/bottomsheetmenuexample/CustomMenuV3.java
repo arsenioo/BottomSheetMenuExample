@@ -76,6 +76,18 @@ public class CustomMenuV3 extends BottomSheetMenu implements View.OnClickListene
                 int width = parent.getMeasuredWidth();
                 int height = parent.getMeasuredHeight();
                 applyRotation(height, width);
+                for(int index=0; index < ((ViewGroup)bottomView).getChildCount(); ++index)
+                {
+                    View nextChild = ((ViewGroup)bottomView).getChildAt(index);
+                    nextChild.setOnFocusChangeListener(new OnFocusChangeListener()
+                    {
+                        @Override
+                        public void onFocusChange(View v, boolean hasFocus)
+                        {
+                            setHideAlarm();
+                        }
+                    });
+                }
             }
         };
 
@@ -93,15 +105,6 @@ public class CustomMenuV3 extends BottomSheetMenu implements View.OnClickListene
         mMenuButtonHeight = params.height;
         mMenuButtonWidth = params.width = (int)(mMenuButtonHeight * 1.2);
         menuControlButton.setLayoutParams(params);
-        menuControlButton.setOnFocusChangeListener(new OnFocusChangeListener()
-        {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus)
-            {
-                ImageView view = parent.findViewById(R.id.closeButImage);
-                if (view != null) handleSelectionChange(view, hasFocus);
-            }
-        });
     }
 
     @Override
@@ -158,12 +161,6 @@ public class CustomMenuV3 extends BottomSheetMenu implements View.OnClickListene
         exitButton.bringToFront();
     }
 
-/*    public void removeExitButton()
-    {
-        if (exitButton == null) return;
-        parent.removeView(exitButton);
-
-    }*/
 
     final Rect zeroRect = new Rect();
 
@@ -311,7 +308,7 @@ public class CustomMenuV3 extends BottomSheetMenu implements View.OnClickListene
 
         if (tapOnVisible)
         {
-            setHideAlarm();
+            ;
             return false;
         }
         hide();
