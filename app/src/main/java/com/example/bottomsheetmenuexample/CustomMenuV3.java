@@ -231,7 +231,7 @@ public class CustomMenuV3 extends BottomSheetMenu implements View.OnClickListene
         {
             fadeButtonOutWithDelay();
         }
-        else
+        else if(newState != BottomSheetBehavior.STATE_COLLAPSED)
         {
             fadeButtonIn();
         }
@@ -309,7 +309,7 @@ public class CustomMenuV3 extends BottomSheetMenu implements View.OnClickListene
         return true;
     }
 
-    public void setLaftHandled(boolean leftHandled)
+    public void setLeftHandled(boolean leftHandled)
     {
         isLefthandled = leftHandled;
     }
