@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
@@ -27,7 +28,7 @@ public class BottomSheetMenu extends CoordinatorLayout  {
 
     public BottomSheetMenu(Context context) {
         super(context);
-        LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        LayoutInflater layoutInflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         layoutInflater.inflate(R.layout.bottom_menu, BottomSheetMenu.this, true);
         _topView = findViewById(R.id.topPart);
         _bottomView = findViewById(R.id.bottomPart);
@@ -93,13 +94,13 @@ public class BottomSheetMenu extends CoordinatorLayout  {
         bottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback()
         {
             @Override
-            public void onStateChanged(View bottomSheet, int newState)
+            public void onStateChanged(@NonNull View bottomSheet, int newState)
             {
                 bottomSheetOnStateChanged(bottomSheet, newState);
             }
 
             @Override
-            public void onSlide(View bottomSheet, float slideOffset)
+            public void onSlide(@NonNull View bottomSheet, float slideOffset)
             {
                 bottomSheetOnSlide(bottomSheet, slideOffset);
             }

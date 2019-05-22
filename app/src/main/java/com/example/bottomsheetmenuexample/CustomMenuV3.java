@@ -1,5 +1,6 @@
 package com.example.bottomsheetmenuexample;
 
+import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -38,6 +39,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import java.util.Calendar;
 import java.util.Date;
 
+@SuppressLint("ViewConstructor")
 public class CustomMenuV3 extends BottomSheetMenu implements View.OnClickListener
 {
     private static final int NEW_GAME_BUTTON_TEXT = R.id.first_menu_item_caption;
@@ -56,6 +58,7 @@ public class CustomMenuV3 extends BottomSheetMenu implements View.OnClickListene
     private Context mContext;
 
 
+    @SuppressLint("InflateParams")
     public CustomMenuV3(final Context context, ViewGroup parentView, boolean leftHandled, boolean menuButtonEnabled)
     {
         super(context);
@@ -68,7 +71,7 @@ public class CustomMenuV3 extends BottomSheetMenu implements View.OnClickListene
         final AsyncLayoutInflater.OnInflateFinishedListener exitButtonViewCallback = new AsyncLayoutInflater.OnInflateFinishedListener()
         {
             @Override
-            public void onInflateFinished(View view, int resid, ViewGroup parent)
+            public void onInflateFinished(@NonNull View view, int resid, ViewGroup parent)
             {
                 exitButton = view;
                 parent.addView(exitButton);
@@ -79,7 +82,7 @@ public class CustomMenuV3 extends BottomSheetMenu implements View.OnClickListene
         final AsyncLayoutInflater.OnInflateFinishedListener topViewCallback = new AsyncLayoutInflater.OnInflateFinishedListener()
         {
             @Override
-            public void onInflateFinished(View view, int resid, ViewGroup parent)
+            public void onInflateFinished(@NonNull View view, int resid, ViewGroup parent)
             {
                 topView = view;
                 initMenuControlButton();
@@ -90,7 +93,7 @@ public class CustomMenuV3 extends BottomSheetMenu implements View.OnClickListene
         final AsyncLayoutInflater.OnInflateFinishedListener bottomViewCallback = new AsyncLayoutInflater.OnInflateFinishedListener()
         {
             @Override
-            public void onInflateFinished(View view, int resid, ViewGroup p)
+            public void onInflateFinished(@NonNull View view, int resid, ViewGroup p)
             {
                 bottomView = view;
                 setBottomView(view);
@@ -155,8 +158,8 @@ public class CustomMenuV3 extends BottomSheetMenu implements View.OnClickListene
 
         Drawable[] layers = new Drawable[2];
         Resources r = getResources();
-        final float birdWidth = mMenuButtonWidth / 2;
-        final float birdHeight =  mMenuButtonHeight / 4;
+        final float birdWidth = mMenuButtonWidth / 2.0f;
+        final float birdHeight =  mMenuButtonHeight / 4.0f;
         layers[0] = paintDrawable(slideOffset, birdWidth, birdHeight, Color.BLACK, r.getDimensionPixelSize(R.dimen.bird_stroke_width) * 2, true);
         layers[1] = paintDrawable(slideOffset, birdWidth, birdHeight, Color.WHITE, r.getDimensionPixelSize(R.dimen.bird_stroke_width), false);
         LayerDrawable layerDrawable = new LayerDrawable(layers);
@@ -165,6 +168,7 @@ public class CustomMenuV3 extends BottomSheetMenu implements View.OnClickListene
         image.requestLayout();
     }
 
+    @SuppressLint("RtlHardcoded")
     private void drawExitButton(float slideOffset)
     {
         if(exitButton == null) return;
@@ -195,7 +199,7 @@ public class CustomMenuV3 extends BottomSheetMenu implements View.OnClickListene
         arrowPaint.setColor(color);
         arrowPaint.setStrokeWidth(strokeWidth);
         arrowPaint.setAntiAlias(true);
-        if (shadowEnabled) arrowPaint.setShadowLayer(strokeWidth / 4, 0, 0, Color.BLACK);
+        if (shadowEnabled) arrowPaint.setShadowLayer(strokeWidth / 4.0f, 0, 0, Color.BLACK);
         drawable.setIntrinsicWidth((int)width);
         drawable.setIntrinsicHeight((int)height);
         drawable.setPadding(zeroRect);                // BugFix for SFA-222, don't change this line:
@@ -272,16 +276,7 @@ public class CustomMenuV3 extends BottomSheetMenu implements View.OnClickListene
     @Override
     public void onClick(View v)
     {
-        switch (v.getId())
-        {
-            case R.id.closeBut:
-                if (!mIsShowing)
-                {
-                    show();
-                }
-                else hide();
-                break;
-        }
+        if (v.getId() == R.id.closeBut) toggle();
     }
 
 
