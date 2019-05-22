@@ -275,11 +275,11 @@ public class CustomMenuV3 extends BottomSheetMenu implements View.OnClickListene
         switch (v.getId())
         {
             case R.id.closeBut:
-                if (currentState == BottomSheetBehavior.STATE_COLLAPSED)
+                if (!mIsShowing)
                 {
                     show();
                 }
-                if (currentState == BottomSheetBehavior.STATE_EXPANDED) hide();
+                else hide();
                 break;
         }
     }

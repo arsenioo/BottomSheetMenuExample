@@ -20,7 +20,6 @@ public class BottomSheetMenu extends CoordinatorLayout  {
     private ViewGroup _bottomView;
     private int topViewHeight = 0;
     private BottomSheetBehavior bottomSheetBehavior;
-    public int currentState;
     public boolean mIsShowing = false;
 
     final LayoutParams matchParentParams =
@@ -56,7 +55,6 @@ public class BottomSheetMenu extends CoordinatorLayout  {
         bottomSheetBehavior = BottomSheetBehavior.from(findViewById(R.id.bottomSheetLayout));
         bottomSheetBehavior.setPeekHeight(topViewHeight);
         setBottomSheetCallback();
-        currentState = BottomSheetBehavior.STATE_COLLAPSED;
     }
 
     public void setTopView(View view)
@@ -76,7 +74,6 @@ public class BottomSheetMenu extends CoordinatorLayout  {
 
     public void bottomSheetOnStateChanged(View bottomSheet, int newState)
     {
-        currentState = newState;
         if (newState == BottomSheetBehavior.STATE_EXPANDED)
         {
             mIsShowing = true;
@@ -127,5 +124,11 @@ public class BottomSheetMenu extends CoordinatorLayout  {
     {
         setHideAlarm();
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+    }
+
+    public void toggle()
+    {
+        if (mIsShowing) hide();
+        else show();
     }
 }
