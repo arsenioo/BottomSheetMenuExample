@@ -131,6 +131,7 @@ public class CustomMenuV3 extends BottomSheetMenu implements View.OnClickListene
         menuControlButton.setOuterWidth(6.0f);
         menuControlButton.setArrowPhase(1f);
         ((ViewGroup)menuControlButtonFrame).addView(menuControlButton, lp);
+        super.invalidate();
         fadeButtonIn();
         fadeButtonOutWithDelay();
     }
