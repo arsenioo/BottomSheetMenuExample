@@ -5,17 +5,10 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.res.Resources;
 import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Path;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.LayerDrawable;
-import android.graphics.drawable.ShapeDrawable;
-import android.graphics.drawable.shapes.PathShape;
 import android.os.BatteryManager;
 import android.text.format.DateFormat;
 import android.util.TypedValue;
@@ -23,9 +16,7 @@ import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AlphaAnimation;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -46,7 +37,8 @@ public class CustomMenuV3 extends BottomSheetMenu implements View.OnClickListene
 
     private static final int BATTERY_BUTTON_ICON = R.id.third_menu_item_icon;
     private static final int BATTERY_BUTTON_TEXT = R.id.third_menu_item_caption;
-    private View menuControlButton;
+    View menuControlButtonFrame;
+    private DynamicArrowView menuControlButton;
     private View exitButton;
     private boolean _menuButtonEnabled;
     private View topView;
@@ -123,13 +115,24 @@ public class CustomMenuV3 extends BottomSheetMenu implements View.OnClickListene
 
     private void initMenuControlButton()
     {
-        menuControlButton = topView.findViewById(R.id.closeBut);
+        menuControlButtonFrame = topView.findViewById(R.id.closeButFrame);
         updateMenuButtonVisibility();
-        menuControlButton.setOnClickListener(this);
-        LinearLayout.LayoutParams params = (LinearLayout.LayoutParams)menuControlButton.getLayoutParams();
+        menuControlButtonFrame.setOnClickListener(this);
+        LinearLayout.LayoutParams params = (LinearLayout.LayoutParams)menuControlButtonFrame.getLayoutParams();
         mMenuButtonHeight = params.height;
         mMenuButtonWidth = params.width = (int)(mMenuButtonHeight * 1.2);
-        menuControlButton.setLayoutParams(params);
+        menuControlButtonFrame.setLayoutParams(params);
+        menuControlButton = new DynamicArrowView(mContext);
+        FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, Gravity.CENTER);
+        menuControlButton.setBackgroundColor(mContext.getResources().getColor(R.color.menuBackgroundColor));
+        menuControlButton.setInnerColor(Color.WHITE);
+        menuControlButton.setInnerWidth(4.0f);
+        menuControlButton.setOuterColor(Color.GRAY);
+        menuControlButton.setOuterWidth(6.0f);
+        menuControlButton.setArrowPhase(1f);
+        ((ViewGroup)menuControlButtonFrame).addView(menuControlButton, lp);
+        fadeButtonIn();
+        fadeButtonOutWithDelay();
     }
 
     @Override
@@ -155,17 +158,8 @@ public class CustomMenuV3 extends BottomSheetMenu implements View.OnClickListene
     private void drawBird(float slideOffset)
     {
         if(menuControlButton == null || menuControlButton.getVisibility() != View.VISIBLE) return;
-
-        Drawable[] layers = new Drawable[2];
-        Resources r = getResources();
-        final float birdWidth = mMenuButtonWidth / 2.0f;
-        final float birdHeight =  mMenuButtonHeight / 4.0f;
-        layers[0] = paintDrawable(slideOffset, birdWidth, birdHeight, Color.BLACK, r.getDimensionPixelSize(R.dimen.bird_stroke_width) * 2, true);
-        layers[1] = paintDrawable(slideOffset, birdWidth, birdHeight, Color.WHITE, r.getDimensionPixelSize(R.dimen.bird_stroke_width), false);
-        LayerDrawable layerDrawable = new LayerDrawable(layers);
-        ImageView image = menuControlButton.findViewById(R.id.closeButImage);
-        image.setImageDrawable(layerDrawable);
-        image.requestLayout();
+        menuControlButton.setArrowPhase(slideOffset);
+        menuControlButton.invalidate();
     }
 
     @SuppressLint("RtlHardcoded")
@@ -186,24 +180,6 @@ public class CustomMenuV3 extends BottomSheetMenu implements View.OnClickListene
         exitButton.invalidate();
         exitButton.requestLayout();
         exitButton.bringToFront();
-    }
-
-
-    final Rect zeroRect = new Rect();
-
-    private ShapeDrawable paintDrawable(float offset, float width, float height, int color, int strokeWidth, boolean shadowEnabled)
-    {
-        ShapeDrawable drawable = new ShapeDrawable(TriangleShape.create(width, height, offset));
-        Paint arrowPaint = drawable.getPaint();
-        arrowPaint.setStyle(Paint.Style.STROKE);
-        arrowPaint.setColor(color);
-        arrowPaint.setStrokeWidth(strokeWidth);
-        arrowPaint.setAntiAlias(true);
-        if (shadowEnabled) arrowPaint.setShadowLayer(strokeWidth / 4.0f, 0, 0, Color.BLACK);
-        drawable.setIntrinsicWidth((int)width);
-        drawable.setIntrinsicHeight((int)height);
-        drawable.setPadding(zeroRect);                // BugFix for SFA-222, don't change this line:
-        return drawable;
     }
 
     @Override
@@ -245,27 +221,16 @@ public class CustomMenuV3 extends BottomSheetMenu implements View.OnClickListene
         drawExitButton(slideOffset);
     }
 
-    private void fadeAnimation(float finalAlpha)
-    {
-        if (android.os.Build.VERSION.SDK_INT < 16 || menuControlButton == null || menuControlButton.getVisibility() != View.VISIBLE) return;
-        ImageView image = menuControlButton.findViewById(R.id.closeButImage);
-        if (image == null) return;
-        AlphaAnimation animation1 = new AlphaAnimation(image.getAlpha(), finalAlpha);
-        animation1.setDuration(500);
-        image.setAlpha(finalAlpha);
-        animation1.setFillAfter(true);
-        image.startAnimation(animation1);
-    }
 
     final Runnable fadeButtonOut = new Runnable() {
         @Override
         public void run() {
-            fadeAnimation(0.5f);
+            menuControlButton.animateAlpha(0.2f);
         }
     };
 
     private void fadeButtonIn() {
-        fadeAnimation(1.0f);
+        menuControlButton.animateAlpha(1.0f);
     }
 
     private void fadeButtonOutWithDelay() {
@@ -276,7 +241,7 @@ public class CustomMenuV3 extends BottomSheetMenu implements View.OnClickListene
     @Override
     public void onClick(View v)
     {
-        if (v.getId() == R.id.closeBut) toggle();
+        if (v.equals(menuControlButtonFrame)) toggle();
     }
 
 
@@ -322,7 +287,7 @@ public class CustomMenuV3 extends BottomSheetMenu implements View.OnClickListene
 
     private void updateMenuButtonVisibility()
     {
-        menuControlButton.setVisibility(_menuButtonEnabled?View.VISIBLE:View.GONE);
+        menuControlButtonFrame.setVisibility(_menuButtonEnabled?View.VISIBLE:View.GONE);
     }
 
     private BroadcastReceiver mBatteryInfoReceiver = new BroadcastReceiver()
@@ -391,32 +356,4 @@ public class CustomMenuV3 extends BottomSheetMenu implements View.OnClickListene
     public void replaceMenuNewGameToResign(){replaceMenuItem(NEW_GAME_BUTTON,   getResources().getString(R.string.resign));}
     public void replaceMenuNewGameToClaim(){replaceMenuItem(NEW_GAME_BUTTON,   getResources().getString(R.string.claim_victory));}
     public void restoreMenuNewGame(){replaceMenuItem(NEW_GAME_BUTTON,   getResources().getString(R.string.new_g));}*/
-
-
-
-    /**
-     * Wrapper around {@link PathShape}
-     * that creates a shape with a triangular path (pointing up or down).
-     */
-    static class TriangleShape extends PathShape
-    {
-        TriangleShape(@NonNull Path path, float stdWidth, float stdHeight) {
-            super(path, stdWidth, stdHeight);
-        }
-
-        static TriangleShape create(float width, float height, float phase)
-        {
-            Path triangularPath = new Path();
-            phase = (float) Math.sin(Math.PI / 2. * phase); //for better "bird" rotation simulation
-            float yEnds = height * (1- phase);
-            float yCenter = height * phase;
-
-                triangularPath.moveTo(0, yEnds);
-                triangularPath.lineTo(width / 2, yCenter);
-                triangularPath.lineTo(width, yEnds);
-
-            return new TriangleShape(triangularPath, width, height);
-        }
-
-    }
 }

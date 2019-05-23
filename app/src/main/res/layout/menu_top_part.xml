@@ -7,23 +7,16 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true">
+
         <FrameLayout
-            android:id="@+id/closeBut"
+            android:id="@+id/closeButFrame"
             android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_height="@dimen/menu_button_height"
             android:clickable="true"
             android:focusable="true"
             android:focusableInTouchMode="false"
-            android:gravity="center"
-            android:background="@color/menuBackgroundColor">
+            android:gravity="center" />
 
-                <ImageView
-                    android:id="@+id/closeButImage"
-                    android:layout_width="wrap_content"
-                    android:layout_height="@dimen/menu_button_height"
-                    android:layout_gravity="center"
-                    />
-        </FrameLayout>
         <TextView
             android:id="@+id/timeLabelView"
             android:layout_marginLeft="16dp"
