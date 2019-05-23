@@ -80,19 +80,17 @@ public class BottomSheetMenu extends CoordinatorLayout  {
     public void setHideAlarm()
     {
         removeCallbacks(hideMenu);
-        postDelayed(hideMenu, /*D.HIDE_MENU_TIMEOUT * 1000*/ 4000);
+        postDelayed(hideMenu, /*D.HIDE_MENU_TIMEOUT * 1000*/ 200);
     }
 
     public void bottomSheetOnStateChanged(View bottomSheet, int newState)
     {
-        if (newState == STATE_EXPANDED)
-        {
+        if (newState == STATE_EXPANDED) {
             mIsShowing = true;
             setHideAlarm();
-        }
-        else if (newState == STATE_COLLAPSED)
-        {
-            mIsShowing = false;
+        } else {
+            if (newState == STATE_COLLAPSED) mIsShowing = false;
+            removeCallbacks(hideMenu);
         }
     }
 

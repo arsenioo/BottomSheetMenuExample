@@ -21,6 +21,7 @@ class DynamicArrowView extends View {
 
     public DynamicArrowView(Context context) {
         super(context);
+        arrowPaint.setAntiAlias(true);
         arrowPaint.setStyle(Paint.Style.STROKE);
         arrowPaint.setStrokeCap(Paint.Cap.ROUND);
     }
@@ -91,19 +92,20 @@ class DynamicArrowView extends View {
         }
     }
 
+    final ValueAnimator.AnimatorUpdateListener animationListener = new ValueAnimator.AnimatorUpdateListener()
+    {
+        public void onAnimationUpdate(ValueAnimator animation) {
+            alpha = (float)animation.getAnimatedValue();
+            invalidate();
+        }
+    };
+
     public void animateAlpha(float newAlpha)
     {
-        float oldAlpha = alpha;
-        ValueAnimator va = ValueAnimator.ofFloat(oldAlpha, newAlpha);
-        int mDuration = 300; //in millis
-        va.setDuration(mDuration);
-        va.addUpdateListener(new ValueAnimator.AnimatorUpdateListener()
-        {
-            public void onAnimationUpdate(ValueAnimator animation) {
-                alpha = (float)animation.getAnimatedValue();
-                invalidate();
-            }
-        });
+        if (alpha == newAlpha) return;
+        ValueAnimator va = ValueAnimator.ofFloat(alpha, newAlpha);
+        va.setDuration(300);
+        va.addUpdateListener(animationListener);
         va.start();
     }
 }

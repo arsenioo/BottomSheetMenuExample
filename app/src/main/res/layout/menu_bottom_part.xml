@@ -14,6 +14,14 @@
     app:justifyContent="space_between"
     app:alignContent="flex_end">
 
+    <Button
+        android:id="@+id/zero_menu_button"
+        style="@style/MenuButton"
+        android:drawableTop="@drawable/ic_menu_deal"
+        android:text="@string/new_g"
+        android:onClick="onFirstButtonClick">
+    </Button>
+
     <RelativeLayout
         android:id="@+id/first_menu_button"
         style="@style/MenuButton"

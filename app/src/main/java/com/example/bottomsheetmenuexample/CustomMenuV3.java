@@ -31,7 +31,6 @@ import java.util.Calendar;
 import java.util.Date;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
-import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
 @SuppressLint("ViewConstructor")
 public class CustomMenuV3 extends BottomSheetMenu implements View.OnClickListener
@@ -43,26 +42,22 @@ public class CustomMenuV3 extends BottomSheetMenu implements View.OnClickListene
     View menuControlButtonFrame;
     private DynamicArrowView menuControlButton;
     private View exitButton;
-    private boolean _menuButtonEnabled;
     private View topView;
     private View bottomView;
-    private  ViewGroup parent;
-    private int mMenuButtonHeight;
-    private int mMenuButtonWidth;
+    private ViewGroup parent;
     private boolean isLefthandled;
     private Context mContext;
 
 
     @SuppressLint("InflateParams")
-    public CustomMenuV3(final Context context, ViewGroup parentView, boolean leftHandled, boolean menuButtonEnabled)
+    public CustomMenuV3(final Context context, ViewGroup parentView, boolean leftHandled, final boolean menuButtonEnabled)
     {
         super(context);
         mContext = context;
         parent = parentView;
         isLefthandled = leftHandled;
-        _menuButtonEnabled = menuButtonEnabled;
 
-        final FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT, Gravity.BOTTOM);
+        final FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT, Gravity.BOTTOM);
         parentView.addView(this, lp);
 
         AsyncLayoutInflater mLayoutInflater = new AsyncLayoutInflater(context);
@@ -83,7 +78,7 @@ public class CustomMenuV3 extends BottomSheetMenu implements View.OnClickListene
             public void onInflateFinished(@NonNull View view, int resid, ViewGroup parent)
             {
                 topView = view;
-                initMenuControlButton();
+                initMenuControlButton(menuButtonEnabled);
                 setTopView(view);
                 drawBird(0);
             }
@@ -95,9 +90,6 @@ public class CustomMenuV3 extends BottomSheetMenu implements View.OnClickListene
             {
                 bottomView = view;
                 setBottomView(view);
-                int width = parent.getMeasuredWidth();
-                int height = parent.getMeasuredHeight();
-                applyRotation(height, width);
                 for(int index=0; index < ((ViewGroup)bottomView).getChildCount(); ++index)
                 {
                     View nextChild = ((ViewGroup)bottomView).getChildAt(index);
@@ -119,25 +111,22 @@ public class CustomMenuV3 extends BottomSheetMenu implements View.OnClickListene
         mLayoutInflater.inflate(R.layout.menu_bottom_part, null, bottomViewCallback);
     }
 
-    private void initMenuControlButton()
+    private void initMenuControlButton(boolean isEnabled)
     {
         menuControlButtonFrame = topView.findViewById(R.id.closeButFrame);
-        updateMenuButtonVisibility();
+        setMenuButtonEnabled(isEnabled);
         menuControlButtonFrame.setOnClickListener(this);
-        LinearLayout.LayoutParams params = (LinearLayout.LayoutParams)menuControlButtonFrame.getLayoutParams();
-        mMenuButtonHeight = params.height;
-        mMenuButtonWidth = params.width = (int)(mMenuButtonHeight * 1.2);
-        menuControlButtonFrame.setLayoutParams(params);
         menuControlButton = new DynamicArrowView(mContext);
-        FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, Gravity.CENTER);
         menuControlButton.setBackgroundColor(mContext.getResources().getColor(R.color.menuBackgroundColor));
         menuControlButton.setInnerColor(Color.WHITE);
-        menuControlButton.setInnerWidth(4.0f);
-        menuControlButton.setOuterColor(Color.GRAY);
+        menuControlButton.setInnerWidth(4.0f/*r.getDimensionPixelSize(R.dimen.bird_stroke_width)*/);
+        menuControlButton.setOuterColor(Color.BLACK);
         menuControlButton.setOuterWidth(8.0f);
         menuControlButton.setArrowPhase(1f);
+
+        final FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT);
         ((ViewGroup)menuControlButtonFrame).addView(menuControlButton, lp);
-        super.invalidate();
+
         fadeButtonIn();
         fadeButtonOutWithDelay();
     }
@@ -152,14 +141,12 @@ public class CustomMenuV3 extends BottomSheetMenu implements View.OnClickListene
     private void applyRotation(int h, int w)
     {
         if (bottomView == null) return;
-        View foursButton = bottomView.findViewById(R.id.fourth_menu_button);
-        if (foursButton == null) return;
-        FlexboxLayout.LayoutParams lp = (FlexboxLayout.LayoutParams)foursButton.getLayoutParams();
+        View wrapView = bottomView.findViewById(R.id.fourth_menu_button);
+        if (wrapView == null) return;
+        FlexboxLayout.LayoutParams lp = (FlexboxLayout.LayoutParams)wrapView.getLayoutParams();
         lp.setWrapBefore(h > w);
-        foursButton.setLayoutParams(lp);
-        foursButton.invalidate();
-        bottomView.invalidate();
-        bottomView.requestLayout();
+        wrapView.setLayoutParams(lp);
+        wrapView.requestLayout();
     }
 
     private void drawBird(float slideOffset)
@@ -208,16 +195,9 @@ public class CustomMenuV3 extends BottomSheetMenu implements View.OnClickListene
     @Override
     public void bottomSheetOnStateChanged(View bottomSheet, int newState)
     {
-
         super.bottomSheetOnStateChanged(bottomSheet, newState);
-        if (newState == BottomSheetBehavior.STATE_EXPANDED)
-        {
-            fadeButtonOutWithDelay();
-        }
-        else if(newState != BottomSheetBehavior.STATE_COLLAPSED)
-        {
-            fadeButtonIn();
-        }
+        if (newState == BottomSheetBehavior.STATE_COLLAPSED) fadeButtonOutWithDelay();
+        else fadeButtonIn();
     }
 
     @Override
@@ -232,17 +212,18 @@ public class CustomMenuV3 extends BottomSheetMenu implements View.OnClickListene
     final Runnable fadeButtonOut = new Runnable() {
         @Override
         public void run() {
-            menuControlButton.animateAlpha(0.2f);
+            menuControlButton.animateAlpha(0.3f);
         }
     };
 
     private void fadeButtonIn() {
+        removeCallbacks(fadeButtonOut);
         menuControlButton.animateAlpha(1.0f);
     }
 
     private void fadeButtonOutWithDelay() {
         removeCallbacks(fadeButtonOut);
-        postDelayed(fadeButtonOut, /*D.FADEOUT_MENU_BUTTON_TIMEOUT * 1000*/ 4000);
+        postDelayed(fadeButtonOut, /*D.FADEOUT_MENU_BUTTON_TIMEOUT * 1000*/ 2000);
     }
 
     @Override
@@ -263,20 +244,18 @@ public class CustomMenuV3 extends BottomSheetMenu implements View.OnClickListene
         final int tapX = Math.round(event.getX());
         final int tapY = Math.round(event.getY());
 
-        bottomView.getGlobalVisibleRect(menuRect);
+        if (bottomView == null) return false;
 
+        bottomView.getGlobalVisibleRect(menuRect);
         boolean tapOnVisible = menuRect.contains(tapX, tapY);
 
-        if (_menuButtonEnabled)
-        {
+        if (menuControlButton != null) {
             menuControlButton.getGlobalVisibleRect(menuRect);
             tapOnVisible |= menuRect.contains(tapX, tapY);
         }
 
-        if (tapOnVisible)
-        {
-            return false;
-        }
+        if (tapOnVisible) return false;
+
         hide();
         return true;
     }
@@ -286,15 +265,9 @@ public class CustomMenuV3 extends BottomSheetMenu implements View.OnClickListene
         isLefthandled = leftHandled;
     }
 
-    public void setMenuButtonEnabled(boolean enabled)
+    private void setMenuButtonEnabled(boolean isEnabled)
     {
-        _menuButtonEnabled = enabled;
-        updateMenuButtonVisibility();
-    }
-
-    private void updateMenuButtonVisibility()
-    {
-        menuControlButtonFrame.setVisibility(_menuButtonEnabled?View.VISIBLE:View.GONE);
+        menuControlButtonFrame.setVisibility(isEnabled? View.VISIBLE: View.GONE);
     }
 
     private BroadcastReceiver mBatteryInfoReceiver = new BroadcastReceiver()
