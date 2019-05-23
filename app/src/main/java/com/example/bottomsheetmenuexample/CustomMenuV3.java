@@ -30,6 +30,9 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import java.util.Calendar;
 import java.util.Date;
 
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
+
 @SuppressLint("ViewConstructor")
 public class CustomMenuV3 extends BottomSheetMenu implements View.OnClickListener
 {
@@ -58,6 +61,9 @@ public class CustomMenuV3 extends BottomSheetMenu implements View.OnClickListene
         parent = parentView;
         isLefthandled = leftHandled;
         _menuButtonEnabled = menuButtonEnabled;
+
+        final FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT, Gravity.BOTTOM);
+        parentView.addView(this, lp);
 
         AsyncLayoutInflater mLayoutInflater = new AsyncLayoutInflater(context);
         final AsyncLayoutInflater.OnInflateFinishedListener exitButtonViewCallback = new AsyncLayoutInflater.OnInflateFinishedListener()
@@ -128,7 +134,7 @@ public class CustomMenuV3 extends BottomSheetMenu implements View.OnClickListene
         menuControlButton.setInnerColor(Color.WHITE);
         menuControlButton.setInnerWidth(4.0f);
         menuControlButton.setOuterColor(Color.GRAY);
-        menuControlButton.setOuterWidth(6.0f);
+        menuControlButton.setOuterWidth(8.0f);
         menuControlButton.setArrowPhase(1f);
         ((ViewGroup)menuControlButtonFrame).addView(menuControlButton, lp);
         super.invalidate();
@@ -257,7 +263,7 @@ public class CustomMenuV3 extends BottomSheetMenu implements View.OnClickListene
         final int tapX = Math.round(event.getX());
         final int tapY = Math.round(event.getY());
 
-        findViewById(R.id.bottomPart).getGlobalVisibleRect(menuRect);
+        bottomView.getGlobalVisibleRect(menuRect);
 
         boolean tapOnVisible = menuRect.contains(tapX, tapY);
 

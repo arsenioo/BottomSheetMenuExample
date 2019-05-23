@@ -91,7 +91,7 @@ class DynamicArrowView extends View {
         }
     }
 
-    public  void animateAlpha(float newAlpha)
+    public void animateAlpha(float newAlpha)
     {
         float oldAlpha = alpha;
         ValueAnimator va = ValueAnimator.ofFloat(oldAlpha, newAlpha);

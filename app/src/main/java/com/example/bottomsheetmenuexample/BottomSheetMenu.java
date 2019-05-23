@@ -2,9 +2,8 @@ package com.example.bottomsheetmenuexample;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -12,26 +11,39 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
+import static android.widget.LinearLayout.VERTICAL;
+import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_COLLAPSED;
+import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDED;
+
 /**
  * Created by apc on 2019-05-15 for BottomSheetMenuExample
  */
 
 public class BottomSheetMenu extends CoordinatorLayout  {
-    private ViewGroup _topView;
-    private ViewGroup _bottomView;
-    private int topViewHeight = 0;
-    private BottomSheetBehavior bottomSheetBehavior;
+    private View _topView;
+    private View _bottomView;
+    private LinearLayout _menuContainerLayout;
+    private BottomSheetBehavior _bottomSheetBehavior;
     public boolean mIsShowing = false;
 
-    final LayoutParams matchParentParams =
-        new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+    final LayoutParams menuPartsLayoutParams =
+        new LayoutParams(MATCH_PARENT, WRAP_CONTENT);
 
     public BottomSheetMenu(Context context) {
         super(context);
-        LayoutInflater layoutInflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        layoutInflater.inflate(R.layout.bottom_menu, BottomSheetMenu.this, true);
-        _topView = findViewById(R.id.topPart);
-        _bottomView = findViewById(R.id.bottomPart);
+        setFitsSystemWindows(true);
+        _menuContainerLayout = new LinearLayout(context);
+        _menuContainerLayout.setOrientation(VERTICAL);
+        _bottomSheetBehavior = new BottomSheetBehavior(context, null);
+        _bottomSheetBehavior.setHideable(false);
+
+        final CoordinatorLayout.LayoutParams lp = new CoordinatorLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT);
+        lp.setBehavior(_bottomSheetBehavior);
+
+        this.addView(_menuContainerLayout, lp);
+        setBottomSheetCallback();
     }
 
     public BottomSheetMenu(Context context, @Nullable AttributeSet attrs) {
@@ -46,22 +58,23 @@ public class BottomSheetMenu extends CoordinatorLayout  {
     protected void onSizeChanged (int w, int h, int oldw, int oldh)
     {
         super.onSizeChanged(w, h, oldw, oldh);
+        if (_topView != null) _bottomSheetBehavior.setPeekHeight(_topView.getHeight());
     }
 
     public void setBottomView(View view)
     {
-        _bottomView.removeAllViews();
-        _bottomView.addView(view, matchParentParams);
-        _bottomView.invalidate();
-        bottomSheetBehavior = BottomSheetBehavior.from(findViewById(R.id.bottomSheetLayout));
-        bottomSheetBehavior.setPeekHeight(topViewHeight);
-        setBottomSheetCallback();
+        if (_bottomView != null) _menuContainerLayout.removeView(_bottomView);
+        _bottomView = view;
+        if (view != null) _menuContainerLayout.addView(view, -1, menuPartsLayoutParams);
     }
 
     public void setTopView(View view)
     {
-        _topView.removeAllViews();
-        _topView.addView(view, matchParentParams);
+        if (_topView != null) _menuContainerLayout.removeView(_topView);
+        _topView = view;
+        if (view != null) {
+            _menuContainerLayout.addView(view, 0, menuPartsLayoutParams);
+        }
     }
 
     public void setHideAlarm()
@@ -72,12 +85,12 @@ public class BottomSheetMenu extends CoordinatorLayout  {
 
     public void bottomSheetOnStateChanged(View bottomSheet, int newState)
     {
-        if (newState == BottomSheetBehavior.STATE_EXPANDED)
+        if (newState == STATE_EXPANDED)
         {
             mIsShowing = true;
             setHideAlarm();
         }
-        else if(newState == BottomSheetBehavior.STATE_COLLAPSED)
+        else if (newState == STATE_COLLAPSED)
         {
             mIsShowing = false;
         }
@@ -88,7 +101,7 @@ public class BottomSheetMenu extends CoordinatorLayout  {
 
     private void setBottomSheetCallback()
     {
-        bottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback()
+        _bottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback()
         {
             @Override
             public void onStateChanged(@NonNull View bottomSheet, int newState)
@@ -104,24 +117,24 @@ public class BottomSheetMenu extends CoordinatorLayout  {
         });
     }
 
-    Runnable hideMenu = new Runnable()
+    final Runnable hideMenu = new Runnable()
     {
         @Override
         public void run()
         {
-            if (bottomSheetBehavior != null) hide();
+            hide();
         }
     };
 
     public void hide()
     {
-        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        _bottomSheetBehavior.setState(STATE_COLLAPSED);
     }
 
     public void show()
     {
         setHideAlarm();
-        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+        _bottomSheetBehavior.setState(STATE_EXPANDED);
     }
 
     public void toggle()
@@ -133,13 +146,11 @@ public class BottomSheetMenu extends CoordinatorLayout  {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec)
     {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         if(_topView != null)
         {
-            _topView.measure(0, 0);
-            topViewHeight = _topView.getMeasuredHeight();
-            if (bottomSheetBehavior != null) bottomSheetBehavior.setPeekHeight(topViewHeight);
+            _bottomSheetBehavior.setPeekHeight(_topView.getMeasuredHeight());
         }
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
 }
