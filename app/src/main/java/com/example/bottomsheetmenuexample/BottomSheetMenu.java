@@ -39,7 +39,7 @@ public class BottomSheetMenu extends CoordinatorLayout  {
         _bottomSheetBehavior = new BottomSheetBehavior(context, null);
         _bottomSheetBehavior.setHideable(false);
 
-        final CoordinatorLayout.LayoutParams lp = new CoordinatorLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT);
+        final CoordinatorLayout.LayoutParams lp = new CoordinatorLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT);
         lp.setBehavior(_bottomSheetBehavior);
 
         this.addView(_menuContainerLayout, lp);
