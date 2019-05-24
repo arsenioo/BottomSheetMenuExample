@@ -16,11 +16,12 @@
             android:clickable="true"
             android:focusable="true"
             android:focusableInTouchMode="false"
+            android:background="?selectableItemBackground"
             app:backgroundColor="@color/menuBackgroundColor"
             app:innerColor="@android:color/white"
             app:outerColor="@android:color/black"
-            app:innerWidth="4dp"
-            app:outerWidth="8dp" />
+            app:innerWidth="2dp"
+            app:outerScaleFactor="2.0" />
 
         <TextView
             android:id="@+id/timeLabelView"

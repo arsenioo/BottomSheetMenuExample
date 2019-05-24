@@ -1,11 +1,14 @@
 <resources>
-    <declare-styleable name="CustomButtonWithVectorTop">
+    <declare-styleable name="ButtonVectorDrawableCompat">
+        <attr name="drawableLeftCompat" format="reference"/>
         <attr name="drawableTopCompat" format="reference"/>
+        <attr name="drawableRightCompat" format="reference"/>
+        <attr name="drawableBottomCompat" format="reference"/>
     </declare-styleable>
 
     <declare-styleable name="DynamicArrowView">
         <attr name="innerWidth" format="dimension"/>
-        <attr name="outerWidth" format="dimension"/>
+        <attr name="outerScaleFactor" format="float"/>
         <attr name="innerColor" format="color"/>
         <attr name="outerColor" format="color"/>
         <attr name="backgroundColor" format="color"/>

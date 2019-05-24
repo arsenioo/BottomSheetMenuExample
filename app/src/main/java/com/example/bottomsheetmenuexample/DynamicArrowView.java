@@ -24,7 +24,7 @@ class DynamicArrowView extends View {
     TypedArray attributeArray;
 
     public DynamicArrowView(Context context) {
-        this(context, null);
+        this(context, null, 0);
     }
 
     public DynamicArrowView(Context context, AttributeSet attrs) {
@@ -39,11 +39,11 @@ class DynamicArrowView extends View {
         if (attrs == null) return;
 
         attributeArray = context.obtainStyledAttributes(attrs, R.styleable.DynamicArrowView);
-        setInnerWidth(attributeArray.getDimension(R.styleable.DynamicArrowView_innerWidth, 14f));
-        setOuterWidth(attributeArray.getDimension(R.styleable.DynamicArrowView_outerWidth, 18f));
+        setInnerWidth(attributeArray.getDimension(R.styleable.DynamicArrowView_innerWidth, 2f));
+        setOuterScaleFactor(attributeArray.getFloat(R.styleable.DynamicArrowView_outerScaleFactor, 2f));
         setInnerColor(attributeArray.getColor(R.styleable.DynamicArrowView_innerColor, Color.RED));
         setOuterColor(attributeArray.getColor(R.styleable.DynamicArrowView_outerColor, Color.GREEN));
-        setBackgroundColor(attributeArray.getColor(R.styleable.DynamicArrowView_backgroundColor, getResources().getColor(R.color.transparent)));
+        //setBackgroundColor(attributeArray.getColor(R.styleable.DynamicArrowView_backgroundColor, 0));
     }
 
     void setInnerWidth(float width)
@@ -51,9 +51,9 @@ class DynamicArrowView extends View {
         innerWidth = width;
     }
 
-    void setOuterWidth(float width)
+    void setOuterScaleFactor(float scaleFactor)
     {
-        outerWidth = width;
+        outerWidth = innerWidth * scaleFactor;
     }
 
     void setArrowPhase(float phase)
