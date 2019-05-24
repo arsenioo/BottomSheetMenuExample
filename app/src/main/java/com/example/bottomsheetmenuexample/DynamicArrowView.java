@@ -2,9 +2,12 @@ package com.example.bottomsheetmenuexample;
 
 import android.animation.ValueAnimator;
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.util.AttributeSet;
 import android.view.View;
 
 import androidx.core.graphics.ColorUtils;
@@ -18,12 +21,29 @@ class DynamicArrowView extends View {
     private int innerColor;
     private int outerColor;
     private float alpha = 0;
+    TypedArray attributeArray;
 
     public DynamicArrowView(Context context) {
-        super(context);
+        this(context, null);
+    }
+
+    public DynamicArrowView(Context context, AttributeSet attrs) {
+        this(context, attrs, 0);
+    }
+
+    public DynamicArrowView(Context context, AttributeSet attrs, int defStyle) {
+        super(context, attrs, defStyle);
         arrowPaint.setAntiAlias(true);
         arrowPaint.setStyle(Paint.Style.STROKE);
         arrowPaint.setStrokeCap(Paint.Cap.ROUND);
+        if (attrs == null) return;
+
+        attributeArray = context.obtainStyledAttributes(attrs, R.styleable.DynamicArrowView);
+        setInnerWidth(attributeArray.getDimension(R.styleable.DynamicArrowView_innerWidth, 14f));
+        setOuterWidth(attributeArray.getDimension(R.styleable.DynamicArrowView_outerWidth, 18f));
+        setInnerColor(attributeArray.getColor(R.styleable.DynamicArrowView_innerColor, Color.RED));
+        setOuterColor(attributeArray.getColor(R.styleable.DynamicArrowView_outerColor, Color.GREEN));
+        setBackgroundColor(attributeArray.getColor(R.styleable.DynamicArrowView_backgroundColor, getResources().getColor(R.color.transparent)));
     }
 
     void setInnerWidth(float width)

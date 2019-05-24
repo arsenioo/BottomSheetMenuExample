@@ -11,14 +11,12 @@ import android.graphics.PorterDuffColorFilter;
 import android.graphics.Rect;
 import android.os.BatteryManager;
 import android.text.format.DateFormat;
-import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.asynclayoutinflater.view.AsyncLayoutInflater;
@@ -35,11 +33,10 @@ import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 @SuppressLint("ViewConstructor")
 public class CustomMenuV3 extends BottomSheetMenu implements View.OnClickListener
 {
-    private static final int NEW_GAME_BUTTON_TEXT = R.id.first_menu_item_caption;
+    private static final int NEW_GAME_BUTTON = R.id.first_menu_button;//item_caption;
 
-    private static final int BATTERY_BUTTON_ICON = R.id.third_menu_item_icon;
-    private static final int BATTERY_BUTTON_TEXT = R.id.third_menu_item_caption;
-    View menuControlButtonFrame;
+    private static final int BATTERY_BUTTON = R.id.third_menu_button;//item_icon;
+
     private DynamicArrowView menuControlButton;
     private View exitButton;
     private View topView;
@@ -113,20 +110,10 @@ public class CustomMenuV3 extends BottomSheetMenu implements View.OnClickListene
 
     private void initMenuControlButton(boolean isEnabled)
     {
-        menuControlButtonFrame = topView.findViewById(R.id.closeButFrame);
+        menuControlButton = topView.findViewById(R.id.closeBut);
         setMenuButtonEnabled(isEnabled);
-        menuControlButtonFrame.setOnClickListener(this);
-        menuControlButton = new DynamicArrowView(mContext);
-        menuControlButton.setBackgroundColor(mContext.getResources().getColor(R.color.menuBackgroundColor));
-        menuControlButton.setInnerColor(Color.WHITE);
-        menuControlButton.setInnerWidth(4.0f/*r.getDimensionPixelSize(R.dimen.bird_stroke_width)*/);
-        menuControlButton.setOuterColor(Color.BLACK);
-        menuControlButton.setOuterWidth(8.0f);
+        menuControlButton.setOnClickListener(this);
         menuControlButton.setArrowPhase(1f);
-
-        final FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT);
-        ((ViewGroup)menuControlButtonFrame).addView(menuControlButton, lp);
-
         fadeButtonIn();
         fadeButtonOutWithDelay();
     }
@@ -229,7 +216,7 @@ public class CustomMenuV3 extends BottomSheetMenu implements View.OnClickListene
     @Override
     public void onClick(View v)
     {
-        if (v.equals(menuControlButtonFrame)) toggle();
+        if (v.equals(menuControlButton)) toggle();
     }
 
 
@@ -267,7 +254,7 @@ public class CustomMenuV3 extends BottomSheetMenu implements View.OnClickListene
 
     private void setMenuButtonEnabled(boolean isEnabled)
     {
-        menuControlButtonFrame.setVisibility(isEnabled? View.VISIBLE: View.GONE);
+        menuControlButton.setVisibility(isEnabled? View.VISIBLE: View.GONE);
     }
 
     private BroadcastReceiver mBatteryInfoReceiver = new BroadcastReceiver()
@@ -291,27 +278,27 @@ public class CustomMenuV3 extends BottomSheetMenu implements View.OnClickListene
     public void updateBattery(float _batteryValue, boolean _batteryCharging)
     {
 
-        TextView iconImage = bottomView.findViewById(BATTERY_BUTTON_ICON);
-        if (iconImage == null) return;
+        Button button = bottomView.findViewById(BATTERY_BUTTON);
+        if (button == null) return;
+        button.setText(getCurrentTime());
         final float[] hsv = {_batteryValue * 1.2f, 1.0f, 0.9f};
         final int batteryResource = _batteryCharging? R.drawable.ic_menu_battery_charge: R.drawable.ic_menu_battery_base;
-
         final VectorDrawableCompat batteryDrawable = VectorDrawableCompat.create(mContext.getResources(), batteryResource, mContext.getTheme());
         if (batteryDrawable != null) batteryDrawable.setColorFilter(new PorterDuffColorFilter(Color.HSVToColor(255, hsv), PorterDuff.Mode.SRC_IN));
-        iconImage.setBackgroundDrawable(batteryDrawable);
-
+        button.setCompoundDrawablesWithIntrinsicBounds(null, batteryDrawable, null, null);
+/*
         final int outValue = (int)(_batteryValue + 0.5f);
         final float textSize = getResources().getDimensionPixelSize(R.dimen.menu_item_image_height) / 3.0f;
-        iconImage.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
-        iconImage.setTextColor(0xFF000000);
+        button.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
+        button.setTextColor(0xFF000000);
 
-        iconImage.setTextScaleX(outValue == 100? 0.85f: 1.0f);
+        button.setTextScaleX(outValue == 100? 0.85f: 1.0f);
 
         final String iconText = _batteryCharging? "": outValue + "%";
-        iconImage.setText(iconText);
+        button.setText(iconText);
+*/
 
-        View itemText = bottomView.findViewById(BATTERY_BUTTON_TEXT);
-        ((TextView) itemText).setText(getCurrentTime());
+
     }
 
     public String getCurrentTime()
@@ -336,4 +323,6 @@ public class CustomMenuV3 extends BottomSheetMenu implements View.OnClickListene
     public void replaceMenuNewGameToResign(){replaceMenuItem(NEW_GAME_BUTTON,   getResources().getString(R.string.resign));}
     public void replaceMenuNewGameToClaim(){replaceMenuItem(NEW_GAME_BUTTON,   getResources().getString(R.string.claim_victory));}
     public void restoreMenuNewGame(){replaceMenuItem(NEW_GAME_BUTTON,   getResources().getString(R.string.new_g));}*/
+
+
 }

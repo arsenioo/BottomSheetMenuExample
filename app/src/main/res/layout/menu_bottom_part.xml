@@ -14,15 +14,57 @@
     app:justifyContent="space_between"
     app:alignContent="flex_end">
 
-    <Button
-        android:id="@+id/zero_menu_button"
+    <com.example.bottomsheetmenuexample.CustomButtonWithVectorTop
+        android:id="@+id/first_menu_button"
         style="@style/MenuButton"
-        android:drawableTop="@drawable/ic_menu_deal"
+        app:drawableTopCompat="@drawable/ic_menu_deal_wraped"
         android:text="@string/new_g"
         android:onClick="onFirstButtonClick">
-    </Button>
+    </com.example.bottomsheetmenuexample.CustomButtonWithVectorTop>
 
-    <RelativeLayout
+    <com.example.bottomsheetmenuexample.CustomButtonWithVectorTop
+        android:id="@+id/second_menu_button"
+        style="@style/MenuButton"
+        app:drawableTopCompat="@drawable/ic_menu_undo"
+        android:text="@string/undo"
+        android:onClick="onSecondButtonClick">
+    </com.example.bottomsheetmenuexample.CustomButtonWithVectorTop>
+
+    <com.example.bottomsheetmenuexample.CustomButtonWithVectorTop
+        android:id="@+id/third_menu_button"
+        style="@style/MenuButton"
+        app:drawableTopCompat="@drawable/ic_menu_battery_base"
+        android:text=""
+        android:onClick="onThirdButtonClick">
+    </com.example.bottomsheetmenuexample.CustomButtonWithVectorTop>
+
+    <com.example.bottomsheetmenuexample.CustomButtonWithVectorTop
+        android:id="@+id/fourth_menu_button"
+        style="@style/MenuButton"
+        app:drawableTopCompat="@drawable/ic_menu_settings"
+        android:text="@string/options"
+        android:onClick="onFourthButtonClick">
+    </com.example.bottomsheetmenuexample.CustomButtonWithVectorTop>
+
+    <com.example.bottomsheetmenuexample.CustomButtonWithVectorTop
+        android:id="@+id/fifth_menu_button"
+        style="@style/MenuButton"
+        app:drawableTopCompat="@drawable/ic_menu_solution"
+        android:text="@string/solution"
+        android:onClick="onSixthButtonClick">
+    </com.example.bottomsheetmenuexample.CustomButtonWithVectorTop>
+
+    <com.example.bottomsheetmenuexample.CustomButtonWithVectorTop
+        android:id="@+id/sixth_menu_button"
+        style="@style/MenuButton"
+        app:drawableTopCompat="@drawable/ic_menu_progress"
+        android:text="@string/graph_progress"
+        android:onClick="onSeventhButtonClick">
+    </com.example.bottomsheetmenuexample.CustomButtonWithVectorTop>
+
+
+
+   <!-- <RelativeLayout
         android:id="@+id/first_menu_button"
         style="@style/MenuButton"
         android:onClick="onFirstButtonClick">
@@ -135,5 +177,5 @@
             android:text="DEBUG SOLUTIONS"
             android:layout_below="@+id/seventh_menu_item_icon" />
     </RelativeLayout>
-
+-->
 </com.google.android.flexbox.FlexboxLayout>

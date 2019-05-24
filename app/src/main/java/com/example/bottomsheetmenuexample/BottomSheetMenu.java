@@ -80,7 +80,7 @@ public class BottomSheetMenu extends CoordinatorLayout  {
     public void setHideAlarm()
     {
         removeCallbacks(hideMenu);
-        postDelayed(hideMenu, /*D.HIDE_MENU_TIMEOUT * 1000*/ 200);
+        postDelayed(hideMenu, /*D.HIDE_MENU_TIMEOUT * 1000*/ 2000);
     }
 
     public void bottomSheetOnStateChanged(View bottomSheet, int newState)
