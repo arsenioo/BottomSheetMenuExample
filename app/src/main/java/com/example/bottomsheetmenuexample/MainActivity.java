@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
     {
         if (mMenu == null)
         {
-            mMenu = new CustomMenuV3(this, rootLayout, true, true);
+            mMenu = new CustomMenuV3(this, rootLayout, false, true);
         }
     }
 

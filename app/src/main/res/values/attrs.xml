@@ -11,7 +11,8 @@
         <attr name="outerScaleFactor" format="float"/>
         <attr name="innerColor" format="color"/>
         <attr name="outerColor" format="color"/>
-        <attr name="backgroundColor" format="color"/>
+        <attr name="selectableBackground" format="reference"/>
+        <attr name="backgroundDrawable" format="reference"/>
     </declare-styleable>
 
 

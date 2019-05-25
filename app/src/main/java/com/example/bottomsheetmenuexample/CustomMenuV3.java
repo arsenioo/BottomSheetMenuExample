@@ -157,10 +157,9 @@ public class CustomMenuV3 extends BottomSheetMenu implements View.OnClickListene
         FrameLayout.LayoutParams params = (FrameLayout.LayoutParams)exitButton.getLayoutParams();
         params.topMargin =  (int)(-1 * width * (1 - slideOffset));
         params.gravity = Gravity.TOP | (isLefthandled?Gravity.LEFT:Gravity.RIGHT);
+        exitButton.setBackgroundResource(isLefthandled? R.drawable.bg_bottom_right_rounded: R.drawable.bg_bottom_left_rounded);
         exitButton.setLayoutParams(params);
-        exitButton.invalidate();
         exitButton.requestLayout();
-        exitButton.bringToFront();
     }
 
     @Override

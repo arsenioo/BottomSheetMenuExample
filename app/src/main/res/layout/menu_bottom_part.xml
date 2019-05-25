@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     android:focusable="true"
     android:focusableInTouchMode="true"
-    android:background="@color/menuBackgroundColor"
+    android:background="@drawable/bk_top_right_rounded"
     android:padding="@dimen/abc_dialog_list_padding_bottom_no_buttons"
     app:flexDirection="row"
     app:flexWrap="wrap"
