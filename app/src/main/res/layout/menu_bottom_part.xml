@@ -50,7 +50,7 @@
         style="@style/MenuButton"
         app:drawableTopCompat="@drawable/ic_menu_solution"
         android:text="@string/solution"
-        android:onClick="onSixthButtonClick">
+        android:onClick="onFifthButtonClick">
     </com.example.bottomsheetmenuexample.ButtonVectorDrawableCompat>
 
     <com.example.bottomsheetmenuexample.ButtonVectorDrawableCompat
@@ -58,7 +58,7 @@
         style="@style/MenuButton"
         app:drawableTopCompat="@drawable/ic_menu_progress"
         android:text="@string/graph_progress"
-        android:onClick="onSeventhButtonClick">
+        android:onClick="onSixthButtonClick">
     </com.example.bottomsheetmenuexample.ButtonVectorDrawableCompat>
 
 

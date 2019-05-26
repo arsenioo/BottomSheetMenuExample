@@ -19,26 +19,26 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         rootLayout = findViewById(R.id.rootLayout);
-        createMenu();
+
+        // Create menu, initialize with defaults
+        mMenu = new CustomMenuV3(this, rootLayout);
+        mMenu.setLeftHandled(true);
+        mMenu.setMenuButtonEnabled(true);
     }
 
-    private void createMenu()
-    {
-        if (mMenu == null)
-        {
-            mMenu = new CustomMenuV3(this, rootLayout);
-            mMenu.setLeftHandled(true);
-            mMenu.setMenuButtonEnabled(true);
-        }
+    @Override
+    public void onBackPressed() {
+        if (mMenu.isActive()) mMenu.hide();
+        else super.onBackPressed();
     }
 
-    public void onFirstButtonClick(View v) {Toast.makeText(this, "NewGame", Toast.LENGTH_LONG).show();}
-    public void onSecondButtonClick(View v){Toast.makeText(this, "Undo", Toast.LENGTH_LONG).show();}
-    public void onThirdButtonClick(View v){Toast.makeText(this, "Hints", Toast.LENGTH_LONG).show();}
-    public void onFourthButtonClick(View v){Toast.makeText(this, "Options", Toast.LENGTH_LONG).show();}
-    public void onFifthButtonClick(View v){Toast.makeText(this, "Solution", Toast.LENGTH_LONG).show();}
-    public void onSixthButtonClick(View v){Toast.makeText(this, "Progress", Toast.LENGTH_LONG).show();}
-    public void onSeventhButtonClick(View v){Toast.makeText(this, "Debug", Toast.LENGTH_LONG).show();}
+    public void onFirstButtonClick(View v)   {mMenu.hide(); Toast.makeText(this, "NewGame", Toast.LENGTH_SHORT).show();}
+    public void onSecondButtonClick(View v)  {Toast.makeText(this, "Undo", Toast.LENGTH_SHORT).show();}
+    public void onThirdButtonClick(View v)   {mMenu.hide(); Toast.makeText(this, "Hints", Toast.LENGTH_SHORT).show();}
+    public void onFourthButtonClick(View v)  {mMenu.hide(); Toast.makeText(this, "Options", Toast.LENGTH_SHORT).show();}
+    public void onFifthButtonClick(View v)   {mMenu.testEnlarge(); mMenu.hide(); Toast.makeText(this, "Solution", Toast.LENGTH_SHORT).show();}
+    public void onSixthButtonClick(View v)   {mMenu.hide(); Toast.makeText(this, "Progress", Toast.LENGTH_SHORT).show();}
+    public void onSeventhButtonClick(View v) {mMenu.hide(); Toast.makeText(this, "Debug", Toast.LENGTH_SHORT).show();}
     public void onExitButtonClick(View v)
     {
         mMenu.setLeftHandled(false);

@@ -2,7 +2,9 @@ package com.example.bottomsheetmenuexample;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
@@ -26,7 +28,6 @@ public class BottomSheetMenu extends CoordinatorLayout  {
     private View _bottomView;
     private LinearLayout _menuContainerLayout;
     private BottomSheetBehavior _bottomSheetBehavior;
-    public boolean mIsShowing = false;
 
     final LayoutParams menuPartsLayoutParams =
         new LayoutParams(MATCH_PARENT, WRAP_CONTENT);
@@ -44,6 +45,7 @@ public class BottomSheetMenu extends CoordinatorLayout  {
 
         this.addView(_menuContainerLayout, lp);
         setBottomSheetCallback();
+        setLayoutCallback();
     }
 
     public BottomSheetMenu(Context context, @Nullable AttributeSet attrs) {
@@ -54,11 +56,9 @@ public class BottomSheetMenu extends CoordinatorLayout  {
         super(context, attrs, defStyleAttr);
     }
 
-    @Override
-    protected void onSizeChanged (int w, int h, int oldw, int oldh)
+    public boolean isActive()
     {
-        super.onSizeChanged(w, h, oldw, oldh);
-        if (_topView != null) _bottomSheetBehavior.setPeekHeight(_topView.getHeight());
+        return (_bottomSheetBehavior != null && _bottomSheetBehavior.getState() == STATE_EXPANDED);
     }
 
     public void setBottomView(View view)
@@ -77,23 +77,7 @@ public class BottomSheetMenu extends CoordinatorLayout  {
         }
     }
 
-    public void setHideAlarm()
-    {
-        removeCallbacks(hideMenu);
-        postDelayed(hideMenu, /*D.HIDE_MENU_TIMEOUT * 1000*/ 2000);
-    }
-
-    public void bottomSheetOnStateChanged(View bottomSheet, int newState)
-    {
-        if (newState == STATE_EXPANDED) {
-            mIsShowing = true;
-            setHideAlarm();
-        } else {
-            if (newState == STATE_COLLAPSED) mIsShowing = false;
-            removeCallbacks(hideMenu);
-        }
-    }
-
+    public void bottomSheetOnStateChanged(View bottomSheet, int newState) {}
     public void bottomSheetOnSlide(View bottomSheet, float slideOffset) {}
 
 
@@ -115,14 +99,16 @@ public class BottomSheetMenu extends CoordinatorLayout  {
         });
     }
 
-    final Runnable hideMenu = new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            hide();
-        }
-    };
+    private void setLayoutCallback() {
+        _menuContainerLayout.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                // At this point the layout is complete and the
+                // dimensions of myView and any child views are known.
+                _bottomSheetBehavior.setPeekHeight(_topView != null? _topView.getHeight(): 0);
+            }
+        });
+    }
 
     public void hide()
     {
@@ -131,24 +117,12 @@ public class BottomSheetMenu extends CoordinatorLayout  {
 
     public void show()
     {
-        setHideAlarm();
         _bottomSheetBehavior.setState(STATE_EXPANDED);
     }
 
     public void toggle()
     {
-        if (mIsShowing) hide();
+        if (isActive()) hide();
         else show();
     }
-
-    @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec)
-    {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        if(_topView != null)
-        {
-            _bottomSheetBehavior.setPeekHeight(_topView.getMeasuredHeight());
-        }
-    }
-
 }

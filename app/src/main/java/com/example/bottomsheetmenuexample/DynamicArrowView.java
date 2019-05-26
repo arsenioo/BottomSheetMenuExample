@@ -24,7 +24,7 @@ class DynamicArrowView extends View {
     private float arrowPhase;
     private int innerColor;
     private int outerColor;
-    private float alpha = 0;
+    private float opacity = 0;
     private Drawable selectableBackground;
     private Drawable backgroundDrawable;
 
@@ -67,37 +67,60 @@ class DynamicArrowView extends View {
             Log.e(this.toString(), "Attributes initialization error", e);
             throw e;
         }
+        recalculatePath();
     }
 
-    void setInnerWidth(float width) {
+    public void setInnerWidth(float width) {
         innerWidth = width;
     }
 
-    void setOuterScaleFactor(float scaleFactor) {
+    public void setOuterScaleFactor(float scaleFactor) {
         outerWidth = innerWidth * scaleFactor;
     }
 
-    void setArrowPhase(float phase) {
+    public void setArrowPhase(float phase) {
+        if (arrowPhase == phase) return;
         arrowPhase = phase;
         recalculatePath();
     }
 
-    void setInnerColor(int color) {
+    public void setInnerColor(int color) {
         innerColor = color;
     }
 
-    void setOuterColor(int color) {
+    public void setOuterColor(int color) {
         outerColor = color;
     }
 
+    public void setOpacity(float opacity) {
+        this.opacity = opacity;
+    }
+
+    private final ValueAnimator.AnimatorUpdateListener animationListener = new ValueAnimator.AnimatorUpdateListener()
+    {
+        public void onAnimationUpdate(ValueAnimator animation) {
+            setOpacity((float)animation.getAnimatedValue());
+            invalidate();
+        }
+    };
+
+    public void animateOpacity(float newOpacity)
+    {
+        if (opacity == newOpacity) return;
+        ValueAnimator va = ValueAnimator.ofFloat(opacity, newOpacity);
+        va.setDuration(600);
+        va.addUpdateListener(animationListener);
+        va.start();
+    }
+
     @SuppressWarnings("unused")
-    void setSelectableBackground(Drawable drawable) {
+    public void setSelectableBackground(Drawable drawable) {
         selectableBackground = drawable;
         constructBackground();
     }
 
     @SuppressWarnings("unused")
-    void setDrawable(Drawable drawable) {
+    public void setDrawable(Drawable drawable) {
         backgroundDrawable = drawable;
         constructBackground();
     }
@@ -135,37 +158,16 @@ class DynamicArrowView extends View {
         recalculatePath();
     }
 
+    private void drawArrowPart(Canvas canvas, float width, int color) {
+        arrowPaint.setColor(ColorUtils.setAlphaComponent(color, (int)(255 * opacity)));
+        arrowPaint.setStrokeWidth(width);
+        canvas.drawPath(arrowPath, arrowPaint);
+    }
+
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-
-        if (outerColor != 0) {
-            arrowPaint.setColor(ColorUtils.setAlphaComponent(outerColor, (int)(255 * alpha)));
-            arrowPaint.setStrokeWidth(outerWidth);
-            canvas.drawPath(arrowPath, arrowPaint);
-        }
-
-        if (innerColor != 0) {
-            arrowPaint.setColor(ColorUtils.setAlphaComponent(innerColor, (int)(255 * alpha)));
-            arrowPaint.setStrokeWidth(innerWidth);
-            canvas.drawPath(arrowPath, arrowPaint);
-        }
-    }
-
-    final ValueAnimator.AnimatorUpdateListener animationListener = new ValueAnimator.AnimatorUpdateListener()
-    {
-        public void onAnimationUpdate(ValueAnimator animation) {
-            alpha = (float)animation.getAnimatedValue();
-            invalidate();
-        }
-    };
-
-    public void animateAlpha(float newAlpha)
-    {
-        if (alpha == newAlpha) return;
-        ValueAnimator va = ValueAnimator.ofFloat(alpha, newAlpha);
-        va.setDuration(300);
-        va.addUpdateListener(animationListener);
-        va.start();
+        if (outerColor != 0) drawArrowPart(canvas, outerWidth, outerColor);
+        if (innerColor != 0) drawArrowPart(canvas, innerWidth, innerColor);
     }
 }
