@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     android:focusable="true"
     android:focusableInTouchMode="true"
-    android:background="@drawable/bk_top_right_rounded"
+    android:background="@drawable/bg_top_right_rounded"
     android:padding="@dimen/abc_dialog_list_padding_bottom_no_buttons"
     app:flexDirection="row"
     app:flexWrap="wrap"
@@ -34,7 +34,6 @@
         android:id="@+id/third_menu_button"
         style="@style/MenuButton"
         app:drawableTopCompat="@drawable/ic_menu_battery_base"
-        android:text=""
         android:onClick="onThirdButtonClick">
     </com.example.bottomsheetmenuexample.ButtonVectorDrawableCompat>
 

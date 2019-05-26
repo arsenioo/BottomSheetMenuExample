@@ -18,7 +18,7 @@ public class MainActivity extends AppCompatActivity {
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        rootLayout = findViewById(android.R.id.content);
+        rootLayout = findViewById(R.id.rootLayout);
         createMenu();
     }
 
@@ -26,7 +26,9 @@ public class MainActivity extends AppCompatActivity {
     {
         if (mMenu == null)
         {
-            mMenu = new CustomMenuV3(this, rootLayout, false, true);
+            mMenu = new CustomMenuV3(this, rootLayout);
+            mMenu.setLeftHandled(true);
+            mMenu.setMenuButtonEnabled(true);
         }
     }
 
@@ -39,5 +41,7 @@ public class MainActivity extends AppCompatActivity {
     public void onSeventhButtonClick(View v){Toast.makeText(this, "Debug", Toast.LENGTH_LONG).show();}
     public void onExitButtonClick(View v)
     {
+        mMenu.setLeftHandled(false);
+        mMenu.setMenuButtonEnabled(false);
     }
 }
