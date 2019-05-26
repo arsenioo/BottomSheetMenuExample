@@ -8,58 +8,65 @@
     android:focusableInTouchMode="true"
     android:background="@drawable/bg_top_right_rounded"
     android:padding="@dimen/abc_dialog_list_padding_bottom_no_buttons"
-    app:flexDirection="row"
     app:flexWrap="wrap"
-    app:alignItems="flex_end"
-    app:justifyContent="space_between"
-    app:alignContent="flex_end">
+    app:alignItems="center"
+    app:alignContent="flex_start">
 
-    <com.example.bottomsheetmenuexample.ButtonVectorDrawableCompat
-        android:id="@+id/first_menu_button"
-        style="@style/MenuButton"
-        app:drawableTopCompat="@drawable/ic_menu_deal"
-        android:text="@string/new_g"
-        android:onClick="onFirstButtonClick">
-    </com.example.bottomsheetmenuexample.ButtonVectorDrawableCompat>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_flexGrow="1">
+        <com.example.bottomsheetmenuexample.ButtonVectorDrawableCompat
+            android:id="@+id/first_menu_button"
+            style="@style/MenuButton"
+            app:drawableTopCompat="@drawable/ic_menu_deal"
+            android:text="@string/new_g"
+            android:onClick="onFirstButtonClick">
+        </com.example.bottomsheetmenuexample.ButtonVectorDrawableCompat>
 
-    <com.example.bottomsheetmenuexample.ButtonVectorDrawableCompat
-        android:id="@+id/second_menu_button"
-        style="@style/MenuButton"
-        app:drawableTopCompat="@drawable/ic_menu_undo"
-        android:text="@string/undo"
-        android:onClick="onSecondButtonClick">
-    </com.example.bottomsheetmenuexample.ButtonVectorDrawableCompat>
+        <com.example.bottomsheetmenuexample.ButtonVectorDrawableCompat
+            android:id="@+id/second_menu_button"
+            style="@style/MenuButton"
+            app:drawableTopCompat="@drawable/ic_menu_undo"
+            android:text="@string/undo"
+            android:onClick="onSecondButtonClick">
+        </com.example.bottomsheetmenuexample.ButtonVectorDrawableCompat>
 
-    <com.example.bottomsheetmenuexample.ButtonVectorDrawableCompat
-        android:id="@+id/third_menu_button"
-        style="@style/MenuButton"
-        app:drawableTopCompat="@drawable/ic_menu_battery_base"
-        android:onClick="onThirdButtonClick">
-    </com.example.bottomsheetmenuexample.ButtonVectorDrawableCompat>
+        <com.example.bottomsheetmenuexample.ButtonVectorDrawableCompat
+            android:id="@+id/third_menu_button"
+            style="@style/MenuButton"
+            app:drawableTopCompat="@drawable/ic_menu_battery_base"
+            android:onClick="onThirdButtonClick">
+        </com.example.bottomsheetmenuexample.ButtonVectorDrawableCompat>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_flexGrow="1">
+        <com.example.bottomsheetmenuexample.ButtonVectorDrawableCompat
+            android:id="@+id/fourth_menu_button"
+            style="@style/MenuButton"
+            app:drawableTopCompat="@drawable/ic_menu_settings"
+            android:text="@string/options"
+            android:onClick="onFourthButtonClick">
+        </com.example.bottomsheetmenuexample.ButtonVectorDrawableCompat>
 
-    <com.example.bottomsheetmenuexample.ButtonVectorDrawableCompat
-        android:id="@+id/fourth_menu_button"
-        style="@style/MenuButton"
-        app:drawableTopCompat="@drawable/ic_menu_settings"
-        android:text="@string/options"
-        android:onClick="onFourthButtonClick">
-    </com.example.bottomsheetmenuexample.ButtonVectorDrawableCompat>
+        <com.example.bottomsheetmenuexample.ButtonVectorDrawableCompat
+            android:id="@+id/fifth_menu_button"
+            style="@style/MenuButton"
+            app:drawableTopCompat="@drawable/ic_menu_solution"
+            android:text="@string/solution"
+            android:onClick="onFifthButtonClick">
+        </com.example.bottomsheetmenuexample.ButtonVectorDrawableCompat>
 
-    <com.example.bottomsheetmenuexample.ButtonVectorDrawableCompat
-        android:id="@+id/fifth_menu_button"
-        style="@style/MenuButton"
-        app:drawableTopCompat="@drawable/ic_menu_solution"
-        android:text="@string/solution"
-        android:onClick="onFifthButtonClick">
-    </com.example.bottomsheetmenuexample.ButtonVectorDrawableCompat>
-
-    <com.example.bottomsheetmenuexample.ButtonVectorDrawableCompat
-        android:id="@+id/sixth_menu_button"
-        style="@style/MenuButton"
-        app:drawableTopCompat="@drawable/ic_menu_progress"
-        android:text="@string/graph_progress"
-        android:onClick="onSixthButtonClick">
-    </com.example.bottomsheetmenuexample.ButtonVectorDrawableCompat>
+        <com.example.bottomsheetmenuexample.ButtonVectorDrawableCompat
+            android:id="@+id/sixth_menu_button"
+            style="@style/MenuButton"
+            app:drawableTopCompat="@drawable/ic_menu_progress"
+            android:text="@string/graph_progress"
+            android:onClick="onSixthButtonClick">
+        </com.example.bottomsheetmenuexample.ButtonVectorDrawableCompat>
+    </LinearLayout>
 
 
 

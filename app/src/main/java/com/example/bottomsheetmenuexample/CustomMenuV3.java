@@ -29,8 +29,6 @@ import androidx.appcompat.widget.AppCompatButton;
 import androidx.asynclayoutinflater.view.AsyncLayoutInflater;
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
-import com.google.android.flexbox.FlexboxLayout;
-
 import java.util.Calendar;
 import java.util.Date;
 
@@ -118,17 +116,6 @@ public class CustomMenuV3 extends BottomSheetMenu implements View.OnClickListene
         mLayoutInflater.inflate(R.layout.menu_exit_button, parentView, exitButtonViewCallback);
         mLayoutInflater.inflate(R.layout.menu_top_part, null, topViewCallback);
         mLayoutInflater.inflate(R.layout.menu_bottom_part, null, bottomViewCallback);
-    }
-
-    private void applyRotation(int h, int w)
-    {
-        if (bottomView == null) return;
-        View wrapView = bottomView.findViewById(R.id.fourth_menu_button);
-        if (wrapView == null) return;
-        FlexboxLayout.LayoutParams lp = (FlexboxLayout.LayoutParams)wrapView.getLayoutParams();
-        lp.setWrapBefore(h > w);
-        wrapView.setLayoutParams(lp);
-        wrapView.requestLayout();
     }
 
     private void drawBird(float offset)
