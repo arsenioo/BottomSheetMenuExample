@@ -3,10 +3,13 @@ package com.example.bottomsheetmenuexample;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
+
+import com.google.android.flexbox.FlexboxLayout;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -19,6 +22,21 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         rootLayout = findViewById(R.id.rootLayout);
+        rootLayout.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                // At this point the layout is complete and the
+                // dimensions of myView and any child views are known.
+                final boolean newWrap = rootLayout.getWidth() <= rootLayout.getHeight();
+                final FlexboxLayout flex = (FlexboxLayout)mMenu.getPersistentMenuView();
+                final View viewToWrap = flex.getChildAt((flex.getChildCount() + 1) / 2);
+                final FlexboxLayout.LayoutParams lp = (FlexboxLayout.LayoutParams)viewToWrap.getLayoutParams();
+                if (lp.isWrapBefore() == newWrap) return;
+                lp.setWrapBefore(newWrap);
+                viewToWrap.setLayoutParams(lp);
+                viewToWrap.requestLayout();
+            }
+        });
 
         // Create menu, initialize with defaults
         mMenu = new CustomMenuV3(this, rootLayout);

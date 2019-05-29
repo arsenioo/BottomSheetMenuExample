@@ -11,13 +11,11 @@ import android.graphics.Paint;
 import android.graphics.PixelFormat;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
-import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.BatteryManager;
 import android.os.SystemClock;
 import android.text.format.DateFormat;
 import android.view.Gravity;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -26,96 +24,53 @@ import android.widget.FrameLayout;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatButton;
-import androidx.asynclayoutinflater.view.AsyncLayoutInflater;
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
 import java.util.Calendar;
 import java.util.Date;
 
-import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_COLLAPSED;
 
-@SuppressLint("ViewConstructor")
 public class CustomMenuV3 extends BottomSheetMenu implements View.OnClickListener
 {
-    private static final int NEW_GAME_BUTTON = R.id.first_menu_button;//item_caption;
+    private static final int NEW_GAME_BUTTON = R.id.menuButton1;
+    private static final int BATTERY_BUTTON = R.id.menuButton3;
 
-    private static final int BATTERY_BUTTON = R.id.third_menu_button;//item_icon;
-
+    private Context context;
     private DynamicArrowView menuControlButton;
     private BatteryLevelDrawable batteryDrawable;
     private AppCompatButton batteryButton;
     private View exitButton;
-    private View topView;
-    private View bottomView;
-    private Context context;
 
     private float slideOffset;
     private int lastBottomSheetState = STATE_COLLAPSED;
     private boolean isLeftHandled;
     private boolean isMenuButtonEnabled = true;
 
-
-    @SuppressLint("InflateParams")
-    public CustomMenuV3(final Context context, ViewGroup parentView)
+    CustomMenuV3(Context context, ViewGroup activityRoot)
     {
-        super(context);
+        super(activityRoot.findViewById(R.id.menuLayout), R.id.buttonsFlex);
+
         this.context = context;
+        menuControlButton = activityRoot.findViewById(R.id.closeBut);
+        exitButton = activityRoot.findViewById(R.id.exitButton);
+        batteryButton = activityRoot.findViewById(BATTERY_BUTTON);
 
-        final FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT, Gravity.BOTTOM);
-        parentView.addView(this, lp);
-
-        AsyncLayoutInflater mLayoutInflater = new AsyncLayoutInflater(context);
-        final AsyncLayoutInflater.OnInflateFinishedListener exitButtonViewCallback = new AsyncLayoutInflater.OnInflateFinishedListener()
-        {
+        menuControlButton.setOnClickListener(CustomMenuV3.this);
+        batteryDrawable = new BatteryLevelDrawable();
+//        batteryButton.setCompoundDrawablesWithIntrinsicBounds(null, batteryDrawable, null, null);
+        exitButton.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
-            public void onInflateFinished(@NonNull View view, int resid, ViewGroup parent)
-            {
-                parent.addView(view);
-                exitButton = view;
-                view.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                    @Override
-                    public void onGlobalLayout() {
-                        // At this point the layout is complete and the
-                        // dimensions of myView and any child views are known.
-                        layoutExitButton();
-                    }
-                });
-                updateLeftHandledAppearance();
+            public void onGlobalLayout() {
+                // At this point the layout is complete and the
+                // dimensions of myView and any child views are known.
+                layoutExitButton();
             }
-        };
-
-        final AsyncLayoutInflater.OnInflateFinishedListener topViewCallback = new AsyncLayoutInflater.OnInflateFinishedListener()
-        {
-            @Override
-            public void onInflateFinished(@NonNull View view, int resid, ViewGroup parent)
-            {
-                topView = view;
-                setTopView(view);
-                menuControlButton = topView.findViewById(R.id.closeBut);
-                menuControlButton.setOnClickListener(CustomMenuV3.this);
-                updateMenuAppearance();
-                fadeButtonIn();
-                fadeButtonOutWithDelay();
-            }
-        };
-        final AsyncLayoutInflater.OnInflateFinishedListener bottomViewCallback = new AsyncLayoutInflater.OnInflateFinishedListener()
-        {
-            @Override
-            public void onInflateFinished(@NonNull View view, int resid, ViewGroup p)
-            {
-                bottomView = view;
-                setBottomView(view);
-                batteryDrawable = new BatteryLevelDrawable();
-                batteryButton = bottomView.findViewById(BATTERY_BUTTON);
-//                batteryButton.setCompoundDrawablesWithIntrinsicBounds(null, batteryDrawable, null, null);
-                updateMenuAppearance();
-            }
-        };
-
-        mLayoutInflater.inflate(R.layout.menu_exit_button, parentView, exitButtonViewCallback);
-        mLayoutInflater.inflate(R.layout.menu_top_part, null, topViewCallback);
-        mLayoutInflater.inflate(R.layout.menu_bottom_part, null, bottomViewCallback);
+        });
+        updateLeftHandledAppearance();
+        updateMenuAppearance();
+        fadeButtonIn();
+        fadeButtonOutWithDelay();
     }
 
     private void drawBird(float offset)
@@ -186,7 +141,7 @@ public class CustomMenuV3 extends BottomSheetMenu implements View.OnClickListene
     }
 
 
-    final Runnable fadeButtonOut = new Runnable() {
+    private final Runnable fadeButtonOut = new Runnable() {
         @Override
         public void run() {
             menuControlButton.animateOpacity(0.3f);
@@ -194,13 +149,13 @@ public class CustomMenuV3 extends BottomSheetMenu implements View.OnClickListene
     };
 
     private void fadeButtonIn() {
-        removeCallbacks(fadeButtonOut);
+        menuControlButton.removeCallbacks(fadeButtonOut);
         menuControlButton.animateOpacity(1.0f);
     }
 
     private void fadeButtonOutWithDelay() {
-        removeCallbacks(fadeButtonOut);
-        postDelayed(fadeButtonOut, /*D.FADEOUT_MENU_BUTTON_TIMEOUT * 1000*/ 2000);
+        menuControlButton.removeCallbacks(fadeButtonOut);
+        menuControlButton.postDelayed(fadeButtonOut, /*D.FADEOUT_MENU_BUTTON_TIMEOUT * 1000*/ 2000);
     }
 
     @Override
@@ -208,13 +163,17 @@ public class CustomMenuV3 extends BottomSheetMenu implements View.OnClickListene
         if (v == menuControlButton) toggle();
     }
 
+//    @Override
+//    public boolean onInterceptTouchEvent(MotionEvent event) {
+//        return super.onInterceptTouchEvent(event);
+//    }
 
-    final Rect menuRect = new Rect();
-
-    @Override
-    public boolean onInterceptTouchEvent(MotionEvent event)
-    {
-        return false;
+//    final Rect menuRect = new Rect();
+//
+//    @Override
+//    public boolean onInterceptTouchEvent(MotionEvent event)
+//    {
+//        return false;
 //        if (isActive())
 //        {
 //            hide();
@@ -242,9 +201,9 @@ public class CustomMenuV3 extends BottomSheetMenu implements View.OnClickListene
 //
 //        hide();
 //        return true;
-    }
+//    }
 
-    public void setLeftHandled(boolean leftHandled)
+    void setLeftHandled(boolean leftHandled)
     {
         if (leftHandled == isLeftHandled) return;
         isLeftHandled = leftHandled;
@@ -271,9 +230,9 @@ public class CustomMenuV3 extends BottomSheetMenu implements View.OnClickListene
 
     private void updateMenuAppearance()
     {
-        if (bottomView == null || menuControlButton == null) return;     // Too early, will be called later anyway
+        if (menuControlButton == null) return;     // Too early, will be called later anyway
 
-        bottomView.setBackgroundResource(isMenuButtonEnabled? R.drawable.bg_top_right_rounded: R.drawable.bg_top_rounded);
+        getPersistentMenuView().setBackgroundResource(isMenuButtonEnabled? R.drawable.bg_top_right_rounded: R.drawable.bg_top_rounded);
         menuControlButton.setVisibility(isMenuButtonEnabled? View.VISIBLE: View.GONE);
     }
 
@@ -326,7 +285,7 @@ public class CustomMenuV3 extends BottomSheetMenu implements View.OnClickListene
 
         BatteryLevelDrawable() {
             textPaint = new Paint();
-            final float textSize = getResources().getDimension(R.dimen.menu_item_image_height) / 3.0f;
+            final float textSize = context.getResources().getDimension(R.dimen.menu_item_image_height) / 3.0f;
             textPaint.setTextSize(textSize);
             textPaint.setColor(0xFF000000);
             textPaint.setAntiAlias(true);
@@ -403,5 +362,4 @@ public class CustomMenuV3 extends BottomSheetMenu implements View.OnClickListene
         exitButton.setLayoutParams(lp);
         exitButton.requestLayout();
     }
-
 }

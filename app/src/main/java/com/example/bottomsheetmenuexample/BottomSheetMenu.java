@@ -1,21 +1,13 @@
 package com.example.bottomsheetmenuexample;
 
-import android.content.Context;
-import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
-import android.view.ViewTreeObserver;
-import android.widget.LinearLayout;
+import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
-
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback;
 
-import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
-import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
-import static android.widget.LinearLayout.VERTICAL;
 import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_COLLAPSED;
 import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDED;
 
@@ -23,91 +15,51 @@ import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_
  * Created by apc on 2019-05-15 for BottomSheetMenuExample
  */
 
-public class BottomSheetMenu extends CoordinatorLayout  {
-    private View _topView;
-    private View _bottomView;
-    private LinearLayout _menuContainerLayout;
+public class BottomSheetMenu {
     private BottomSheetBehavior _bottomSheetBehavior;
+    private View _persistentMenuView;
 
-    final LayoutParams menuPartsLayoutParams =
-        new LayoutParams(MATCH_PARENT, WRAP_CONTENT);
+    BottomSheetMenu(@NonNull View sheetView, @IdRes int waterlineViewId) {
+        _persistentMenuView = sheetView.findViewById(waterlineViewId);
+        _bottomSheetBehavior = BottomSheetBehavior.from(sheetView);
 
-    public BottomSheetMenu(Context context) {
-        super(context);
-        setFitsSystemWindows(true);
-        _menuContainerLayout = new LinearLayout(context);
-        _menuContainerLayout.setOrientation(VERTICAL);
-        _bottomSheetBehavior = new BottomSheetBehavior(context, null);
-        _bottomSheetBehavior.setHideable(false);
-
-        final CoordinatorLayout.LayoutParams lp = new CoordinatorLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT);
-        lp.setBehavior(_bottomSheetBehavior);
-
-        this.addView(_menuContainerLayout, lp);
-        setBottomSheetCallback();
-        setLayoutCallback();
-    }
-
-    public BottomSheetMenu(Context context, @Nullable AttributeSet attrs) {
-        super(context, attrs);
-    }
-
-    public BottomSheetMenu(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-    }
-
-    public boolean isActive()
-    {
-        return (_bottomSheetBehavior != null && _bottomSheetBehavior.getState() == STATE_EXPANDED);
-    }
-
-    public void setBottomView(View view)
-    {
-        if (_bottomView != null) _menuContainerLayout.removeView(_bottomView);
-        _bottomView = view;
-        if (view != null) _menuContainerLayout.addView(view, -1, menuPartsLayoutParams);
-    }
-
-    public void setTopView(View view)
-    {
-        if (_topView != null) _menuContainerLayout.removeView(_topView);
-        _topView = view;
-        if (view != null) {
-            _menuContainerLayout.addView(view, 0, menuPartsLayoutParams);
-        }
-    }
-
-    public void bottomSheetOnStateChanged(View bottomSheet, int newState) {}
-    public void bottomSheetOnSlide(View bottomSheet, float slideOffset) {}
-
-
-    private void setBottomSheetCallback()
-    {
-        _bottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback()
-        {
+        final BottomSheetCallback bottomSheetCallback = new BottomSheetCallback() {
             @Override
-            public void onStateChanged(@NonNull View bottomSheet, int newState)
-            {
+            public void onStateChanged(@NonNull View bottomSheet, int newState) {
                 bottomSheetOnStateChanged(bottomSheet, newState);
             }
 
             @Override
-            public void onSlide(@NonNull View bottomSheet, float slideOffset)
-            {
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
                 bottomSheetOnSlide(bottomSheet, slideOffset);
             }
-        });
-    }
+        };
 
-    private void setLayoutCallback() {
-        _menuContainerLayout.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+        final View waterlineView = sheetView.findViewById(waterlineViewId);
+        final OnGlobalLayoutListener globalLayoutListener = new OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
                 // At this point the layout is complete and the
                 // dimensions of myView and any child views are known.
-                _bottomSheetBehavior.setPeekHeight(_topView != null? _topView.getHeight(): 0);
+                _bottomSheetBehavior.setPeekHeight(waterlineView.getTop());
             }
-        });
+        };
+
+        _bottomSheetBehavior.setBottomSheetCallback(bottomSheetCallback);
+        sheetView.getViewTreeObserver().addOnGlobalLayoutListener(globalLayoutListener);
+    }
+
+    @NonNull View getPersistentMenuView() {
+        return _persistentMenuView;
+    }
+
+    public void bottomSheetOnStateChanged(View bottomSheet, int newState) {}
+
+    public void bottomSheetOnSlide(View bottomSheet, float slideOffset) {}
+
+    boolean isActive()
+    {
+        return (_bottomSheetBehavior != null && _bottomSheetBehavior.getState() == STATE_EXPANDED);
     }
 
     public void hide()
@@ -120,7 +72,7 @@ public class BottomSheetMenu extends CoordinatorLayout  {
         _bottomSheetBehavior.setState(STATE_EXPANDED);
     }
 
-    public void toggle()
+    void toggle()
     {
         if (isActive()) hide();
         else show();
