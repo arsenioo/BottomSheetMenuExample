@@ -23,6 +23,7 @@ import android.widget.FrameLayout;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatButton;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
 import java.util.Calendar;
@@ -123,7 +124,7 @@ class CustomMenuV3
     @SuppressLint("RtlHardcoded")
     void setLeftHandled(boolean leftHandled)
     {
-        final FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams)exitButton.getLayoutParams();
+        final CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams)exitButton.getLayoutParams();
         lp.gravity = Gravity.TOP | (leftHandled? Gravity.LEFT: Gravity.RIGHT);
         exitButton.setLayoutParams(lp);
         exitButton.setBackgroundResource(leftHandled? R.drawable.bg_bottom_right_rounded: R.drawable.bg_bottom_left_rounded);

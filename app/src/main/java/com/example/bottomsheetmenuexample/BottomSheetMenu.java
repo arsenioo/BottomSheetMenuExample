@@ -181,7 +181,7 @@ public class BottomSheetMenu {
         public static class WithUpperPanel extends WithAnimatedGripButton {
             private View upperPanel;
 
-            WithUpperPanel(@NonNull View sheetView, @NonNull View persistentMenuView, @NonNull DynamicArrowView gripButton, @Nullable View upperPanel) {
+            WithUpperPanel(@NonNull View sheetView, @NonNull View persistentMenuView, @NonNull DynamicArrowView gripButton, @NonNull View upperPanel) {
                 super(sheetView, persistentMenuView, gripButton);
                 this.upperPanel = upperPanel;
             }
@@ -190,15 +190,12 @@ public class BottomSheetMenu {
             public void bottomSheetOnSlide(View bottomSheet, float offset) {
                 final float lastOffset = getSlideProgress();
 
-                if (upperPanel != null) { // May be we have to change visibility
-                    if (lastOffset != 0 && offset == 0)
-                        upperPanel.setVisibility(View.GONE);      // Time to hide
-                    else if (lastOffset == 0 && offset != 0)
-                        upperPanel.setVisibility(View.VISIBLE);   // Time to show
+                // May be we have to change visibility
+                if (lastOffset != 0 && offset == 0) upperPanel.setVisibility(View.GONE);            // Time to hide
+                else if (lastOffset == 0 && offset != 0) upperPanel.setVisibility(View.VISIBLE);    // Time to show
 
-                    upperPanel.setTranslationY((offset - 1) * upperPanel.getHeight());
-                    upperPanel.invalidate();
-                }
+                upperPanel.setTranslationY((offset - 1) * upperPanel.getHeight());
+                upperPanel.invalidate();
                 super.bottomSheetOnSlide(bottomSheet, offset);
             }
         }
