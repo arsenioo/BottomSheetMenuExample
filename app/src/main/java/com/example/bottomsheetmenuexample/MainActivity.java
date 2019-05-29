@@ -3,7 +3,6 @@ package com.example.bottomsheetmenuexample;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -22,26 +21,31 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         rootLayout = findViewById(R.id.rootLayout);
-        rootLayout.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+        final FlexboxLayout persistentMenuView = rootLayout.findViewById(R.id.buttonsFlex);
+
+        final View.OnLayoutChangeListener layoutChangeListener = new View.OnLayoutChangeListener() {
             @Override
-            public void onGlobalLayout() {
-                // At this point the layout is complete and the
-                // dimensions of myView and any child views are known.
+            public void onLayoutChange(View view, int left, int top, int right, int bottom,
+                                       int oldLeft, int oldTop, int oldRight, int oldBottom) {
+
+                if (left == oldLeft && right == oldRight && top == oldTop && bottom == oldBottom) return;
+
                 final boolean newWrap = rootLayout.getWidth() <= rootLayout.getHeight();
-                final FlexboxLayout flex = (FlexboxLayout)mMenu.getPersistentMenuView();
-                final View viewToWrap = flex.getChildAt((flex.getChildCount() + 1) / 2);
+                final View viewToWrap = persistentMenuView.getChildAt((persistentMenuView.getChildCount() + 1) / 2);
                 final FlexboxLayout.LayoutParams lp = (FlexboxLayout.LayoutParams)viewToWrap.getLayoutParams();
                 if (lp.isWrapBefore() == newWrap) return;
                 lp.setWrapBefore(newWrap);
                 viewToWrap.setLayoutParams(lp);
                 viewToWrap.requestLayout();
             }
-        });
+        };
+
+        rootLayout.addOnLayoutChangeListener(layoutChangeListener);
 
         // Create menu, initialize with defaults
-        mMenu = new CustomMenuV3(this, rootLayout);
+        mMenu = new CustomMenuV3(this, rootLayout, persistentMenuView);
+        mMenu.setGripButtonEnabled(true);        // Synchronize with xml layout initial state
         mMenu.setLeftHandled(true);
-        mMenu.setMenuButtonEnabled(true);
     }
 
     @Override
@@ -53,13 +57,24 @@ public class MainActivity extends AppCompatActivity {
     public void onFirstButtonClick(View v)   {mMenu.hide(); Toast.makeText(this, "NewGame", Toast.LENGTH_SHORT).show();}
     public void onSecondButtonClick(View v)  {Toast.makeText(this, "Undo", Toast.LENGTH_SHORT).show();}
     public void onThirdButtonClick(View v)   {mMenu.hide(); Toast.makeText(this, "Hints", Toast.LENGTH_SHORT).show();}
-    public void onFourthButtonClick(View v)  {mMenu.hide(); Toast.makeText(this, "Options", Toast.LENGTH_SHORT).show();}
+
+    public void onFourthButtonClick(View v)  {
+        mMenu.setLeftHandled(true);
+        mMenu.setGripButtonEnabled(true);
+        Toast.makeText(this, "Options", Toast.LENGTH_SHORT).show();
+    }
+
     public void onFifthButtonClick(View v)   {mMenu.testEnlarge(); mMenu.hide(); Toast.makeText(this, "Solution", Toast.LENGTH_SHORT).show();}
-    public void onSixthButtonClick(View v)   {mMenu.hide(); Toast.makeText(this, "Progress", Toast.LENGTH_SHORT).show();}
+
+    public void onSixthButtonClick(View v) {
+        mMenu.setLeftHandled(false);
+        mMenu.setGripButtonEnabled(false);
+        mMenu.hide(); Toast.makeText(this, "Progress", Toast.LENGTH_SHORT).show();
+    }
     public void onSeventhButtonClick(View v) {mMenu.hide(); Toast.makeText(this, "Debug", Toast.LENGTH_SHORT).show();}
+
     public void onExitButtonClick(View v)
     {
-        mMenu.setLeftHandled(false);
-        mMenu.setMenuButtonEnabled(false);
+        finish();
     }
 }

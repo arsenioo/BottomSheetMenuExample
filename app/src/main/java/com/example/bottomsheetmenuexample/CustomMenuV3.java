@@ -18,7 +18,6 @@ import android.text.format.DateFormat;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
@@ -31,136 +30,54 @@ import java.util.Date;
 
 import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_COLLAPSED;
 
-public class CustomMenuV3 extends BottomSheetMenu implements View.OnClickListener
+class CustomMenuV3
 {
+
     private static final int NEW_GAME_BUTTON = R.id.menuButton1;
     private static final int BATTERY_BUTTON = R.id.menuButton3;
 
     private Context context;
-    private DynamicArrowView menuControlButton;
+    private DynamicArrowView gripButton;
     private BatteryLevelDrawable batteryDrawable;
     private AppCompatButton batteryButton;
     private View exitButton;
+    private View persistentMenuView;
 
-    private float slideOffset;
-    private int lastBottomSheetState = STATE_COLLAPSED;
-    private boolean isLeftHandled;
-    private boolean isMenuButtonEnabled = true;
+    private MenuWithListener menu;
 
-    CustomMenuV3(Context context, ViewGroup activityRoot)
+    private static class MenuWithListener extends BottomSheetMenu.WithAnimatedGripButton.WithUpperPanel {
+        private int lastBottomSheetState = STATE_COLLAPSED;
+
+        MenuWithListener(@NonNull View sheetView, @NonNull View persistentMenuView, @NonNull DynamicArrowView gripButton, @Nullable View upperPanel) {
+            super(sheetView, persistentMenuView, gripButton, upperPanel);
+        }
+
+        @Override
+        public void bottomSheetOnStateChanged(View bottomSheet, int newState) {
+            super.bottomSheetOnStateChanged(bottomSheet, newState);
+            if (lastBottomSheetState == STATE_COLLAPSED && newState != STATE_COLLAPSED) {
+                //updateBatteryButton();
+            }
+            lastBottomSheetState = newState;
+        }
+    }
+
+    CustomMenuV3(@NonNull Context context, @NonNull ViewGroup activityRoot, @NonNull View persistentMenuView)
     {
-        super(activityRoot.findViewById(R.id.menuLayout), R.id.buttonsFlex);
-
         this.context = context;
-        menuControlButton = activityRoot.findViewById(R.id.closeBut);
+        this.persistentMenuView = persistentMenuView;
+        gripButton = activityRoot.findViewById(R.id.gripButton);
         exitButton = activityRoot.findViewById(R.id.exitButton);
+
+        menu = new MenuWithListener(
+            activityRoot.findViewById(R.id.menuLayout), persistentMenuView, gripButton, exitButton);
+
+        menu.setFadeDelay(300);
+        menu.setFadedOpacity(0.3f);
         batteryButton = activityRoot.findViewById(BATTERY_BUTTON);
 
-        menuControlButton.setOnClickListener(CustomMenuV3.this);
         batteryDrawable = new BatteryLevelDrawable();
 //        batteryButton.setCompoundDrawablesWithIntrinsicBounds(null, batteryDrawable, null, null);
-        exitButton.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                // At this point the layout is complete and the
-                // dimensions of myView and any child views are known.
-                layoutExitButton();
-            }
-        });
-        updateLeftHandledAppearance();
-        updateMenuAppearance();
-        fadeButtonIn();
-        fadeButtonOutWithDelay();
-    }
-
-    private void drawBird(float offset)
-    {
-        if (!isMenuButtonEnabled) return;
-        menuControlButton.setArrowPhase(offset);
-        menuControlButton.invalidate();
-    }
-
-    private void layoutExitButton() {
-        final int height = exitButton.getHeight();
-        if (height == 0) return;            // Not measured, will be called later after layout
-
-        exitButton.setTranslationY((slideOffset - 1) * height);
-        exitButton.invalidate();
-    }
-
-    private void setExitButtonOffset(float offset) {
-        if (slideOffset == offset || exitButton == null) return;    // Too early or no changes
-
-        // May be we have to change visibility
-        if (slideOffset != 0 && offset == 0) exitButton.setVisibility(View.GONE);           // Time to hide
-        else if (slideOffset == 0 && offset != 0) exitButton.setVisibility(View.VISIBLE);   // Time to show
-
-        slideOffset = offset;
-        layoutExitButton();
-    }
-
-
-    @Override
-    public void show()
-    {
-        super.show();
-        fadeButtonIn();
-        if (menuControlButton != null) menuControlButton.clearFocus();
-    }
-
-    @Override
-    public void hide()
-    {
-        super.hide();
-        if (menuControlButton != null) menuControlButton.requestFocus();
-    }
-
-    @Override
-    public void bottomSheetOnStateChanged(View bottomSheet, int newState)
-    {
-        super.bottomSheetOnStateChanged(bottomSheet, newState);
-        if (newState == STATE_COLLAPSED)
-        {
-            fadeButtonOutWithDelay();
-        }
-        else fadeButtonIn();
-
-        if (lastBottomSheetState == STATE_COLLAPSED && newState != STATE_COLLAPSED)
-        {
-            //updateBatteryButton();
-        }
-        lastBottomSheetState = newState;
-    }
-
-    @Override
-    public void bottomSheetOnSlide(View bottomSheet, float slideOffset)
-    {
-        super.bottomSheetOnSlide(bottomSheet, slideOffset);
-        if (menuControlButton != null) drawBird(slideOffset);
-        if (exitButton != null) setExitButtonOffset(slideOffset);
-    }
-
-
-    private final Runnable fadeButtonOut = new Runnable() {
-        @Override
-        public void run() {
-            menuControlButton.animateOpacity(0.3f);
-        }
-    };
-
-    private void fadeButtonIn() {
-        menuControlButton.removeCallbacks(fadeButtonOut);
-        menuControlButton.animateOpacity(1.0f);
-    }
-
-    private void fadeButtonOutWithDelay() {
-        menuControlButton.removeCallbacks(fadeButtonOut);
-        menuControlButton.postDelayed(fadeButtonOut, /*D.FADEOUT_MENU_BUTTON_TIMEOUT * 1000*/ 2000);
-    }
-
-    @Override
-    public void onClick(View v) {
-        if (v == menuControlButton) toggle();
     }
 
 //    @Override
@@ -203,37 +120,39 @@ public class CustomMenuV3 extends BottomSheetMenu implements View.OnClickListene
 //        return true;
 //    }
 
+    @SuppressLint("RtlHardcoded")
     void setLeftHandled(boolean leftHandled)
     {
-        if (leftHandled == isLeftHandled) return;
-        isLeftHandled = leftHandled;
-        updateLeftHandledAppearance();
-    }
-
-    void setMenuButtonEnabled(boolean enabled)
-    {
-        if (isMenuButtonEnabled == enabled) return;
-        isMenuButtonEnabled = enabled;
-        updateMenuAppearance();
-    }
-
-    @SuppressLint("RtlHardcoded")
-    private void updateLeftHandledAppearance() {
-        if (exitButton == null) return;             // Too early, will be called later anyway
-
         final FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams)exitButton.getLayoutParams();
-        lp.gravity = Gravity.TOP | (isLeftHandled? Gravity.LEFT: Gravity.RIGHT);
+        lp.gravity = Gravity.TOP | (leftHandled? Gravity.LEFT: Gravity.RIGHT);
         exitButton.setLayoutParams(lp);
-        exitButton.setBackgroundResource(isLeftHandled? R.drawable.bg_bottom_right_rounded: R.drawable.bg_bottom_left_rounded);
+        exitButton.setBackgroundResource(leftHandled? R.drawable.bg_bottom_right_rounded: R.drawable.bg_bottom_left_rounded);
         exitButton.requestLayout();
     }
 
-    private void updateMenuAppearance()
+    void setGripButtonEnabled(boolean enabled)
     {
-        if (menuControlButton == null) return;     // Too early, will be called later anyway
+        persistentMenuView.setBackgroundResource(enabled? R.drawable.bg_top_right_rounded: R.drawable.bg_top_rounded);
+        persistentMenuView.invalidate();
+        menu.setGripButtonEnabled(enabled);
+    }
 
-        getPersistentMenuView().setBackgroundResource(isMenuButtonEnabled? R.drawable.bg_top_right_rounded: R.drawable.bg_top_rounded);
-        menuControlButton.setVisibility(isMenuButtonEnabled? View.VISIBLE: View.GONE);
+    @SuppressWarnings("unused")
+    void show() {
+        menu.show();
+    }
+
+    void hide() {
+        menu.hide();
+    }
+
+    @SuppressWarnings("unused")
+    void toggle() {
+        menu.toggle();
+    }
+
+    boolean isActive() {
+        return menu.isActive();
     }
 
     private final IntentFilter batteryInfoRequest = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
@@ -350,12 +269,13 @@ public class CustomMenuV3 extends BottomSheetMenu implements View.OnClickListene
         }
     }
 
+    @SuppressWarnings("WeakerAccess")
     public void testEnlarge() {     // TODO: Remove this
-        android.view.ViewGroup.LayoutParams lp = menuControlButton.getLayoutParams();
+        android.view.ViewGroup.LayoutParams lp = gripButton.getLayoutParams();
         lp.width = lp.width * 8 / 7;
         lp.height = lp.height * 8 / 7;
-        menuControlButton.setLayoutParams(lp);
-        menuControlButton.requestLayout();
+        gripButton.setLayoutParams(lp);
+        gripButton.requestLayout();
         lp = exitButton.getLayoutParams();
         lp.width = exitButton.getWidth() * 8 / 7;
         lp.height = exitButton.getHeight() * 8 / 7;
