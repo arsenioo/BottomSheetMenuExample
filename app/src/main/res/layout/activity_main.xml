@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     android:id="@+id/rootLayout"
+    android:saveEnabled="false"
     android:background="@color/colorPrimaryDark">
 
     <TextView
@@ -17,6 +18,7 @@
     <!--Exit button-->
     <FrameLayout
         android:id="@+id/exitButton"
+        android:saveEnabled="false"
         android:visibility="invisible"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -26,6 +28,7 @@
         <androidx.appcompat.widget.AppCompatImageButton
             style="@style/Widget.AppCompat.Button.Borderless"
             android:id="@+id/exitButImage"
+            android:saveEnabled="false"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="12dp"
@@ -34,16 +37,20 @@
             app:srcCompat="@drawable/ic_menu_quit"
             />
     </FrameLayout>
+
+    <!--Menu sheet-->
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/menuLayout"
+        android:saveEnabled="false"
         app:behavior_hideable="false"
-        app:behavior_peekHeight="60dp"
+        app:behavior_peekHeight="200dp"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
-        <!--Top part, bird button and labels-->
+        <!--Peak part: grip button and labels-->
         <com.example.bottomsheetmenuexample.DynamicArrowView
             android:id="@+id/gripButton"
+            android:saveEnabled="false"
             android:layout_width="48dp"
             android:layout_height="40dp"
             android:layout_alignParentLeft="true"
@@ -60,6 +67,7 @@
             app:outerScaleFactor="2.0" />
         <TextView
             android:id="@+id/timeLabelView"
+            android:saveEnabled="false"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="16dp"
@@ -71,6 +79,7 @@
             android:text="Time: 1:05:10"/>
         <TextView
             android:id="@+id/scoresLabelView"
+            android:saveEnabled="false"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="16dp"
@@ -91,43 +100,58 @@
             android:background="@drawable/bg_top_right_rounded"
             android:padding="@dimen/abc_dialog_list_padding_bottom_no_buttons"
             app:flexWrap="wrap"
-            app:alignItems="center"
+            app:alignItems="flex_start"
             app:alignContent="flex_start">
             <com.example.bottomsheetmenuexample.ButtonVectorDrawableCompat
                 android:id="@+id/menuButton1"
                 style="@style/MenuButton"
                 app:drawableTopCompat="@drawable/ic_menu_deal"
                 android:text="@string/new_g"
+                app:layout_flexGrow="3"
+                app:layout_minWidth="76dp"
                 android:onClick="onFirstButtonClick"/>
             <com.example.bottomsheetmenuexample.ButtonVectorDrawableCompat
                 android:id="@+id/menuButton2"
                 style="@style/MenuButton"
                 app:drawableTopCompat="@drawable/ic_menu_undo"
                 android:text="@string/undo"
+                app:layout_flexGrow="3"
+                app:layout_minWidth="76dp"
                 android:onClick="onSecondButtonClick"/>
             <com.example.bottomsheetmenuexample.ButtonVectorDrawableCompat
                 android:id="@+id/menuButton3"
                 style="@style/MenuButton"
                 app:drawableTopCompat="@drawable/ic_menu_battery_base"
+                app:layout_flexGrow="3"
+                app:layout_minWidth="76dp"
                 android:onClick="onThirdButtonClick"/>
-            <com.example.bottomsheetmenuexample.ButtonVectorDrawableCompat
-                android:id="@+id/menuButton4"
-                style="@style/MenuButton"
-                app:drawableTopCompat="@drawable/ic_menu_settings"
-                android:text="@string/options"
-                android:onClick="onFourthButtonClick"/>
-            <com.example.bottomsheetmenuexample.ButtonVectorDrawableCompat
-                android:id="@+id/menuButton5"
-                style="@style/MenuButton"
-                app:drawableTopCompat="@drawable/ic_menu_solution"
-                android:text="@string/solution"
-                android:onClick="onFifthButtonClick"/>
-            <com.example.bottomsheetmenuexample.ButtonVectorDrawableCompat
-                android:id="@+id/menuButton6"
-                style="@style/MenuButton"
-                app:drawableTopCompat="@drawable/ic_menu_progress"
-                android:text="@string/graph_progress"
-                android:onClick="onSixthButtonClick"/>
-        </com.google.android.flexbox.FlexboxLayout>
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="top"
+                app:layout_flexGrow="1.0">
+                <com.example.bottomsheetmenuexample.ButtonVectorDrawableCompat
+                    android:id="@+id/menuButton4"
+                    android:layout_weight="1"
+                    style="@style/MenuButton"
+                    app:drawableTopCompat="@drawable/ic_menu_settings"
+                    android:text="@string/options"
+                    android:onClick="onFourthButtonClick"/>
+                <com.example.bottomsheetmenuexample.ButtonVectorDrawableCompat
+                    android:id="@+id/menuButton5"
+                    android:layout_weight="1"
+                    style="@style/MenuButton"
+                    app:drawableTopCompat="@drawable/ic_menu_solution"
+                    android:text="@string/solution"
+                    android:onClick="onFifthButtonClick"/>
+                <com.example.bottomsheetmenuexample.ButtonVectorDrawableCompat
+                    android:id="@+id/menuButton6"
+                    android:layout_weight="1"
+                    style="@style/MenuButton"
+                    app:drawableTopCompat="@drawable/ic_menu_progress"
+                    android:text="@string/graph_progress"
+                    android:onClick="onSixthButtonClick"/>
+            </LinearLayout>
+        </com.google.android.flexbox.FlexboxLayout>>
     </RelativeLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

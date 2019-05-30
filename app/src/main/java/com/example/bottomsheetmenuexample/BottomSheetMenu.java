@@ -45,6 +45,7 @@ public class BottomSheetMenu {
 
         bottomSheetBehavior.setBottomSheetCallback(bottomSheetCallback);
         persistentMenuView.addOnLayoutChangeListener(layoutChangeListener);
+        hide();
     }
 
     float getSlideProgress() {

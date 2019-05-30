@@ -1,14 +1,18 @@
 package com.example.bottomsheetmenuexample;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 
 import com.google.android.flexbox.FlexboxLayout;
+
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -21,29 +25,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         rootLayout = findViewById(R.id.rootLayout);
-        final FlexboxLayout persistentMenuView = rootLayout.findViewById(R.id.buttonsFlex);
-
-        final View.OnLayoutChangeListener layoutChangeListener = new View.OnLayoutChangeListener() {
-            @Override
-            public void onLayoutChange(View view, int left, int top, int right, int bottom,
-                                       int oldLeft, int oldTop, int oldRight, int oldBottom) {
-
-                if (left == oldLeft && right == oldRight && top == oldTop && bottom == oldBottom) return;
-
-                final boolean newWrap = rootLayout.getWidth() <= rootLayout.getHeight();
-                final View viewToWrap = persistentMenuView.getChildAt((persistentMenuView.getChildCount() + 1) / 2);
-                final FlexboxLayout.LayoutParams lp = (FlexboxLayout.LayoutParams)viewToWrap.getLayoutParams();
-                if (lp.isWrapBefore() == newWrap) return;
-                lp.setWrapBefore(newWrap);
-                viewToWrap.setLayoutParams(lp);
-                viewToWrap.requestLayout();
-            }
-        };
-
-        rootLayout.addOnLayoutChangeListener(layoutChangeListener);
 
         // Create menu, initialize with defaults
-        mMenu = new CustomMenuV3(this, rootLayout, persistentMenuView);
+        mMenu = new CustomMenuV3(this, rootLayout, rootLayout.findViewById(R.id.buttonsFlex));
         mMenu.setGripButtonEnabled(true);        // Synchronize with xml layout initial state
         mMenu.setLeftHandled(true);
     }
