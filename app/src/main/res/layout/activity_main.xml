@@ -45,7 +45,7 @@
         android:id="@+id/menuLayout"
         android:saveEnabled="false"
         app:behavior_hideable="false"
-        app:behavior_peekHeight="200dp"
+        app:behavior_peekHeight="400dp"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
         <!--Peak part: grip button and labels-->
         <com.example.bottomsheetmenuexample.DynamicArrowView
@@ -107,7 +107,7 @@
                 style="@style/MenuButton"
                 app:drawableTopCompat="@drawable/ic_menu_deal"
                 android:text="@string/new_g"
-                app:layout_flexGrow="3"
+                app:layout_flexGrow="1"
                 app:layout_minWidth="76dp"
                 android:onClick="onFirstButtonClick"/>
             <com.example.bottomsheetmenuexample.ButtonVectorDrawableCompat
@@ -115,21 +115,21 @@
                 style="@style/MenuButton"
                 app:drawableTopCompat="@drawable/ic_menu_undo"
                 android:text="@string/undo"
-                app:layout_flexGrow="3"
+                app:layout_flexGrow="1"
                 app:layout_minWidth="76dp"
                 android:onClick="onSecondButtonClick"/>
             <com.example.bottomsheetmenuexample.ButtonVectorDrawableCompat
                 android:id="@+id/menuButton3"
                 style="@style/MenuButton"
                 app:drawableTopCompat="@drawable/ic_menu_battery_base"
-                app:layout_flexGrow="3"
+                app:layout_flexGrow="1"
                 app:layout_minWidth="76dp"
                 android:onClick="onThirdButtonClick"/>
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="top"
-                app:layout_flexGrow="1.0">
+                app:layout_flexGrow="3">
                 <com.example.bottomsheetmenuexample.ButtonVectorDrawableCompat
                     android:id="@+id/menuButton4"
                     android:layout_weight="1"

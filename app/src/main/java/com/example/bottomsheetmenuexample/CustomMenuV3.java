@@ -18,7 +18,6 @@ import android.text.format.DateFormat;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -49,7 +48,7 @@ class CustomMenuV3
     private static class MenuWithListener extends BottomSheetMenu.WithAnimatedGripButton.WithUpperPanel {
         private int lastBottomSheetState = STATE_COLLAPSED;
 
-        MenuWithListener(@NonNull View sheetView, @NonNull View persistentMenuView, @NonNull DynamicArrowView gripButton, @Nullable View upperPanel) {
+        MenuWithListener(@NonNull View sheetView, @NonNull View persistentMenuView, @NonNull DynamicArrowView gripButton, @NonNull View upperPanel) {
             super(sheetView, persistentMenuView, gripButton, upperPanel);
         }
 
@@ -80,46 +79,6 @@ class CustomMenuV3
         batteryDrawable = new BatteryLevelDrawable();
 //        batteryButton.setCompoundDrawablesWithIntrinsicBounds(null, batteryDrawable, null, null);
     }
-
-//    @Override
-//    public boolean onInterceptTouchEvent(MotionEvent event) {
-//        return super.onInterceptTouchEvent(event);
-//    }
-
-//    final Rect menuRect = new Rect();
-//
-//    @Override
-//    public boolean onInterceptTouchEvent(MotionEvent event)
-//    {
-//        return false;
-//        if (isActive())
-//        {
-//            hide();
-//            return true;
-//        }
-//        else return false;
-//
-//        // Filter initial touch event only
-//        if (event.getAction() != MotionEvent.ACTION_DOWN) return false;
-//
-//        final int tapX = Math.round(event.getX());
-//        final int tapY = Math.round(event.getY());
-//
-//        if (bottomView == null) return false;
-//
-//        bottomView.getGlobalVisibleRect(menuRect);
-//        boolean tapOnVisible = menuRect.contains(tapX, tapY);
-//
-//        if (menuControlButton != null) {
-//            menuControlButton.getGlobalVisibleRect(menuRect);
-//            tapOnVisible |= menuRect.contains(tapX, tapY);
-//        }
-//
-//        if (tapOnVisible) return false;
-//
-//        hide();
-//        return true;
-//    }
 
     @SuppressLint("RtlHardcoded")
     void setLeftHandled(boolean leftHandled)
