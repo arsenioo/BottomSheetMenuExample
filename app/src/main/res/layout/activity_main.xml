@@ -121,7 +121,7 @@
             <com.example.bottomsheetmenuexample.ButtonVectorDrawableCompat
                 android:id="@+id/menuButton3"
                 style="@style/MenuButton"
-                app:drawableTopCompat="@drawable/ic_menu_battery_base"
+                app:drawableTopCompat="@drawable/ic_menu_battery_charge"
                 app:layout_flexGrow="1"
                 app:layout_minWidth="76dp"
                 android:onClick="onThirdButtonClick"/>
