@@ -169,15 +169,20 @@ class CustomMenuV3 implements ActivationListener {
                     batteryBitmap = Bitmap.createBitmap(batteryDrawable.getIntrinsicWidth(), batteryDrawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
                     batteryBitmapCanvas = new Canvas(batteryBitmap);
                     batteryTextPaint = new Paint();
-                    final float textSize = context.getResources().getDimension(R.dimen.menu_item_image_height) / 3.0f;
-                    batteryTextPaint.setTextSize(textSize);
+
+                    final String text = "0123456789%";
+                    final float lineHeight = batteryBitmapCanvas.getHeight() * 15.0f / 30.0f * 0.5f;    // Desired height according to drawing dimensions
+                    final float initialTextSize = 24.0f;                                                // Initial text size, any value
+                    batteryTextPaint.setTextSize(initialTextSize);
+                    Rect textBounds = new Rect();
+                    batteryTextPaint.getTextBounds(text, 0, text.length(), textBounds);
+                    batteryTextPaint.setTextSize(initialTextSize * lineHeight / textBounds.height());  // Final size according to measurements
+                    batteryTextPaint.getTextBounds(text, 0, text.length(), textBounds);
+
                     batteryTextPaint.setColor(0xFF000000);
                     batteryTextPaint.setAntiAlias(true);
                     batteryTextPaint.setStyle(Paint.Style.FILL);
                     batteryTextPaint.setTextAlign(Paint.Align.CENTER);
-                    Rect textBounds = new Rect();
-                    final String text = "0123456789%";
-                    batteryTextPaint.getTextBounds(text, 0, text.length(), textBounds);
                     batteryDischargingDrawable.setBounds(0, 0, batteryBitmapCanvas.getWidth(), batteryBitmapCanvas.getHeight());
                     batteryTextX = batteryBitmap.getWidth() / 2;
                     batteryTextY = (batteryBitmap.getHeight() + textBounds.height()) / 2;
@@ -185,7 +190,7 @@ class CustomMenuV3 implements ActivationListener {
                 }
                 else batteryBitmap.eraseColor(0);
                 batteryDischargingDrawable.draw(batteryBitmapCanvas);
-                batteryTextPaint.setTextScaleX(newLevel == 100? 0.85f: 1.0f);
+                batteryTextPaint.setTextScaleX(newLevel == 100? 0.75f: 0.95f);
                 batteryBitmapCanvas.drawText(newLevel + "%", batteryTextX, batteryTextY, batteryTextPaint);
                 batteryDrawable = batteryComposedDrawable;
             }
