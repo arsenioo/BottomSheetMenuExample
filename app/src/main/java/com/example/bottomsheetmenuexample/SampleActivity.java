@@ -8,10 +8,10 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 
-public class MainActivity extends AppCompatActivity {
+public class SampleActivity extends AppCompatActivity {
 
     ViewGroup rootLayout;
-    CustomMenuV3 mMenu;
+    SoftickMenu mMenu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,7 +21,7 @@ public class MainActivity extends AppCompatActivity {
         rootLayout = findViewById(R.id.rootLayout);
 
         // Create menu, initialize with defaults
-        mMenu = new CustomMenuV3(this, rootLayout, rootLayout.findViewById(R.id.buttonsFlex));
+        mMenu = new SoftickMenu(this, rootLayout, rootLayout.findViewById(R.id.buttonsFlex));
         mMenu.setGripButtonEnabled(true);        // Synchronize with xml layout initial state
         mMenu.setLeftHandled(true);
     }
@@ -30,6 +30,12 @@ public class MainActivity extends AppCompatActivity {
     public void onBackPressed() {
         if (mMenu.isActive()) mMenu.hide();
         else super.onBackPressed();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        mMenu.hide();
     }
 
     public void onFirstButtonClick(View v)   {mMenu.hide(); Toast.makeText(this, "NewGame", Toast.LENGTH_SHORT).show();}
@@ -42,14 +48,13 @@ public class MainActivity extends AppCompatActivity {
         Toast.makeText(this, "Options", Toast.LENGTH_SHORT).show();
     }
 
-    public void onFifthButtonClick(View v)   {mMenu.testEnlarge(); mMenu.hide(); Toast.makeText(this, "Solution", Toast.LENGTH_SHORT).show();}
+    public void onFifthButtonClick(View v)   {mMenu.hide(); Toast.makeText(this, "Solution", Toast.LENGTH_SHORT).show();}
 
     public void onSixthButtonClick(View v) {
         mMenu.setLeftHandled(false);
         mMenu.setGripButtonEnabled(false);
         mMenu.hide(); Toast.makeText(this, "Progress", Toast.LENGTH_SHORT).show();
     }
-    public void onSeventhButtonClick(View v) {mMenu.hide(); Toast.makeText(this, "Debug", Toast.LENGTH_SHORT).show();}
 
     public void onExitButtonClick(View v)
     {

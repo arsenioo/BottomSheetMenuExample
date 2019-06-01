@@ -11,7 +11,7 @@ import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_
 import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDED;
 
 /**
- * Created by apc on 2019-05-15 for BottomSheetMenuExample
+ * Created by apc on 2019-05-15
  */
 
 public class BottomSheetMenu {

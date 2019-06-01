@@ -76,7 +76,8 @@
             android:layout_toRightOf="@+id/gripButton"
             android:layout_toEndOf="@+id/gripButton"
             android:layout_above="@+id/buttonsFlex"
-            android:text="Time: 1:05:10"/>
+            android:text="Time: 1:05:10"
+            tools:ignore="HardcodedText" />
         <TextView
             android:id="@+id/scoresLabelView"
             android:saveEnabled="false"
@@ -88,7 +89,8 @@
             android:layout_toRightOf="@+id/timeLabelView"
             android:layout_toEndOf="@+id/timeLabelView"
             android:layout_above="@+id/buttonsFlex"
-            android:text="Score: 112"/>
+            android:text="Score: 112"
+            tools:ignore="HardcodedText" />
         <!--All the menu buttons-->
         <com.google.android.flexbox.FlexboxLayout
             android:id="@+id/buttonsFlex"
@@ -101,7 +103,8 @@
             android:padding="@dimen/abc_dialog_list_padding_bottom_no_buttons"
             app:flexWrap="wrap"
             app:alignItems="flex_start"
-            app:alignContent="flex_start">
+            app:alignContent="flex_start"
+            tools:ignore="PrivateResource">
             <com.example.bottomsheetmenuexample.ButtonVectorDrawableCompat
                 android:id="@+id/menuButton1"
                 style="@style/MenuButton"
@@ -119,9 +122,8 @@
                 app:layout_minWidth="76dp"
                 android:onClick="onSecondButtonClick"/>
             <com.example.bottomsheetmenuexample.ButtonVectorDrawableCompat
-                android:id="@+id/menuButton3"
+                android:id="@+id/batteryButton"
                 style="@style/MenuButton"
-                app:drawableTopCompat="@drawable/ic_menu_battery_charge"
                 app:layout_flexGrow="1"
                 app:layout_minWidth="76dp"
                 android:onClick="onThirdButtonClick"/>
@@ -152,6 +154,6 @@
                     android:text="@string/graph_progress"
                     android:onClick="onSixthButtonClick"/>
             </LinearLayout>
-        </com.google.android.flexbox.FlexboxLayout>>
+        </com.google.android.flexbox.FlexboxLayout>
     </RelativeLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

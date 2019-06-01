@@ -1,6 +1,7 @@
 package com.example.bottomsheetmenuexample;
 
 import android.annotation.SuppressLint;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -29,16 +30,16 @@ import java.util.Date;
 
 import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_COLLAPSED;
 
-interface ActivationListener {
-    void onActivationListener();
+interface MenuActivationListener {
+    void onActivated();
+    void onCollapsed();
 }
 
-class CustomMenuV3 implements ActivationListener {
-    private static final int NEW_GAME_BUTTON = R.id.menuButton1;
-    private static final int BATTERY_BUTTON = R.id.menuButton3;
-
+class SoftickMenu implements MenuActivationListener {
+    private static final int FADE_DELAY = 300;
+    private static final float FADED_OPACITY = 0.3f;
+    private final IntentFilter batteryInfoRequest = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
     private Context context;
-    private DynamicArrowView gripButton;
     private AppCompatButton batteryButton;
     private View exitButton;
     private View persistentMenuView;
@@ -47,9 +48,9 @@ class CustomMenuV3 implements ActivationListener {
 
     private static class MenuWithActivationListener extends BottomSheetMenu.WithAnimatedGripButton.WithUpperPanel {
         private int lastBottomSheetState = STATE_COLLAPSED;
-        private ActivationListener activationListener;
+        private MenuActivationListener activationListener;
 
-        MenuWithActivationListener(@NonNull View sheetView, @NonNull View persistentMenuView, @NonNull DynamicArrowView gripButton, @NonNull View upperPanel, @NonNull ActivationListener activationListener) {
+        MenuWithActivationListener(@NonNull View sheetView, @NonNull View persistentMenuView, @NonNull DynamicArrowView gripButton, @NonNull View upperPanel, @NonNull MenuActivationListener activationListener) {
             super(sheetView, persistentMenuView, gripButton, upperPanel);
             this.activationListener = activationListener;
         }
@@ -58,30 +59,48 @@ class CustomMenuV3 implements ActivationListener {
         public void bottomSheetOnStateChanged(View bottomSheet, int newState) {
             super.bottomSheetOnStateChanged(bottomSheet, newState);
             if (lastBottomSheetState == STATE_COLLAPSED && newState != STATE_COLLAPSED) {
-                activationListener.onActivationListener();
+                activationListener.onActivated();
+            } else if (lastBottomSheetState != STATE_COLLAPSED && newState == STATE_COLLAPSED) {
+                activationListener.onCollapsed();
             }
             lastBottomSheetState = newState;
         }
     }
 
-    CustomMenuV3(@NonNull Context context, @NonNull ViewGroup activityRoot, @NonNull View persistentMenuView)
+    SoftickMenu(@NonNull Context context, @NonNull ViewGroup activityRoot, @NonNull View persistentMenuView)
     {
         this.context = context;
         this.persistentMenuView = persistentMenuView;
-        gripButton = activityRoot.findViewById(R.id.gripButton);
         exitButton = activityRoot.findViewById(R.id.exitButton);
+        final DynamicArrowView gripButton = activityRoot.findViewById(R.id.gripButton);
 
         menu = new MenuWithActivationListener(
             activityRoot.findViewById(R.id.menuLayout), persistentMenuView, gripButton, exitButton, this);
 
-        menu.setFadeDelay(300);
-        menu.setFadedOpacity(0.3f);
-        batteryButton = activityRoot.findViewById(BATTERY_BUTTON);
+        // Some hardcoded appearance
+        menu.setFadeDelay(FADE_DELAY);
+        menu.setFadedOpacity(FADED_OPACITY);
+        batteryButton = activityRoot.findViewById(R.id.batteryButton);
+    }
+
+    private final BroadcastReceiver batteryInfoReceiver = new BroadcastReceiver()
+    {
+        @Override
+        public void onReceive(Context context, Intent intent)
+        {
+            String action = intent.getAction();
+            if (Intent.ACTION_BATTERY_CHANGED.equals(action)) updateBatteryItem(intent);
+        }
+    };
+
+    @Override
+    public void onActivated() {
+        context.registerReceiver(batteryInfoReceiver, batteryInfoRequest);
     }
 
     @Override
-    public void onActivationListener() {
-        updateBatteryItem();
+    public void onCollapsed() {
+        context.unregisterReceiver(batteryInfoReceiver);
     }
 
     @SuppressLint("RtlHardcoded")
@@ -125,7 +144,6 @@ class CustomMenuV3 implements ActivationListener {
         return DateFormat.getTimeFormat(context).format(time);
     }
 
-    private final IntentFilter batteryInfoRequest = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
     private int batteryLevel = -1;
     private boolean batteryCharging;
     private String batteryIconCaption;
@@ -161,7 +179,7 @@ class CustomMenuV3 implements ActivationListener {
             }
             if (batteryDrawable == null) return;
 
-            final float[] hsv = {newLevel * 1.2f, 1.0f, 0.9f};
+            final float[] hsv = {newLevel * 1.2f, 1.0f, 0.9f};  // Battery color from red to green
             batteryDrawable.setColorFilter(new PorterDuffColorFilter(Color.HSVToColor(255, hsv), PorterDuff.Mode.SRC_IN));
 
             if (!newCharging) {
@@ -170,14 +188,14 @@ class CustomMenuV3 implements ActivationListener {
                     batteryBitmapCanvas = new Canvas(batteryBitmap);
                     batteryTextPaint = new Paint();
 
-                    final String text = "0123456789%";
+                    final String text = "0";
                     final float lineHeight = batteryBitmapCanvas.getHeight() * 15.0f / 30.0f * 0.5f;    // Desired height according to drawing dimensions
                     final float initialTextSize = 24.0f;                                                // Initial text size, any value
                     batteryTextPaint.setTextSize(initialTextSize);
                     Rect textBounds = new Rect();
-                    batteryTextPaint.getTextBounds(text, 0, text.length(), textBounds);
+                    batteryTextPaint.getTextBounds(text, 0, 1, textBounds);
                     batteryTextPaint.setTextSize(initialTextSize * lineHeight / textBounds.height());  // Final size according to measurements
-                    batteryTextPaint.getTextBounds(text, 0, text.length(), textBounds);
+                    batteryTextPaint.getTextBounds(text, 0, 1, textBounds);
 
                     batteryTextPaint.setColor(0xFF000000);
                     batteryTextPaint.setAntiAlias(true);
@@ -201,46 +219,13 @@ class CustomMenuV3 implements ActivationListener {
         }
     }
 
-    private void updateBatteryItem()
-    {
-        final Intent batteryInfo = context.registerReceiver(null, batteryInfoRequest);
+    private void updateBatteryItem(Intent batteryInfo) {
         if (batteryInfo == null) return;
-
         final int level = batteryInfo.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
         final int scale = batteryInfo.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
         final int status = batteryInfo.getIntExtra(BatteryManager.EXTRA_STATUS, BatteryManager.BATTERY_STATUS_UNKNOWN);
         final int batteryLevel = (int)((100.0f * level) / scale + 0.5f);
         final boolean isCharging = (status == BatteryManager.BATTERY_STATUS_CHARGING);
         updateBatteryItem(getCurrentTime(), batteryLevel, isCharging);
-    }
-
-/*    public void restoreMenuButtons()
-    {
-        if (!D.MULTIPLAY)
-        {
-            restoreMenuNewGame();
-            restoreMenuSolution();
-        }
-        else replaceMenuNewGameToEndGame();
-
-    }*/
-
-/*    public void replaceMenuNewGameToEndGame(){replaceMenuItem(NEW_GAME_BUTTON,   getResources().getString(R.string.endGame));}
-    public void replaceMenuNewGameToResign(){replaceMenuItem(NEW_GAME_BUTTON,   getResources().getString(R.string.resign));}
-    public void replaceMenuNewGameToClaim(){replaceMenuItem(NEW_GAME_BUTTON,   getResources().getString(R.string.claim_victory));}
-    public void restoreMenuNewGame(){replaceMenuItem(NEW_GAME_BUTTON,   getResources().getString(R.string.new_g));}*/
-
-    @SuppressWarnings("WeakerAccess")
-    public void testEnlarge() {     // TODO: Remove this
-        android.view.ViewGroup.LayoutParams lp = gripButton.getLayoutParams();
-        lp.width = lp.width * 8 / 7;
-        lp.height = lp.height * 8 / 7;
-        gripButton.setLayoutParams(lp);
-        gripButton.requestLayout();
-        lp = exitButton.getLayoutParams();
-        lp.width = exitButton.getWidth() * 8 / 7;
-        lp.height = exitButton.getHeight() * 8 / 7;
-        exitButton.setLayoutParams(lp);
-        exitButton.requestLayout();
     }
 }
