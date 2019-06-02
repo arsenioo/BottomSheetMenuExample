@@ -28,13 +28,6 @@ import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 import java.util.Calendar;
 import java.util.Date;
 
-import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_COLLAPSED;
-
-interface MenuActivationListener {
-    void onActivated();
-    void onCollapsed();
-}
-
 class SoftickMenu implements MenuActivationListener {
     private static final int FADE_DELAY = 300;
     private static final float FADED_OPACITY = 0.3f;
@@ -44,28 +37,7 @@ class SoftickMenu implements MenuActivationListener {
     private View exitButton;
     private View persistentMenuView;
 
-    private MenuWithActivationListener menu;
-
-    private static class MenuWithActivationListener extends BottomSheetMenu.WithAnimatedGripButton.WithUpperPanel {
-        private int lastBottomSheetState = STATE_COLLAPSED;
-        private MenuActivationListener activationListener;
-
-        MenuWithActivationListener(@NonNull View sheetView, @NonNull View persistentMenuView, @NonNull DynamicArrowView gripButton, @NonNull View upperPanel, @NonNull MenuActivationListener activationListener) {
-            super(sheetView, persistentMenuView, gripButton, upperPanel);
-            this.activationListener = activationListener;
-        }
-
-        @Override
-        public void bottomSheetOnStateChanged(View bottomSheet, int newState) {
-            super.bottomSheetOnStateChanged(bottomSheet, newState);
-            if (lastBottomSheetState == STATE_COLLAPSED && newState != STATE_COLLAPSED) {
-                activationListener.onActivated();
-            } else if (lastBottomSheetState != STATE_COLLAPSED && newState == STATE_COLLAPSED) {
-                activationListener.onCollapsed();
-            }
-            lastBottomSheetState = newState;
-        }
-    }
+    private BottomSheetMenu.WithAnimatedGripButton.WithUpperPanel menu;
 
     SoftickMenu(@NonNull Context context, @NonNull ViewGroup activityRoot, @NonNull View persistentMenuView)
     {
@@ -74,8 +46,10 @@ class SoftickMenu implements MenuActivationListener {
         exitButton = activityRoot.findViewById(R.id.exitButton);
         final DynamicArrowView gripButton = activityRoot.findViewById(R.id.gripButton);
 
-        menu = new MenuWithActivationListener(
-            activityRoot.findViewById(R.id.menuLayout), persistentMenuView, gripButton, exitButton, this);
+        menu = new BottomSheetMenu.WithAnimatedGripButton.WithUpperPanel(
+            activityRoot.findViewById(R.id.menuLayout), persistentMenuView, gripButton, exitButton);
+
+        menu.setActivationListener(this);
 
         // Some hardcoded appearance
         menu.setFadeDelay(FADE_DELAY);
@@ -184,6 +158,7 @@ class SoftickMenu implements MenuActivationListener {
 
             if (!newCharging) {
                 if (batteryBitmap == null) {
+                    // Lazy resources loading, part 2
                     batteryBitmap = Bitmap.createBitmap(batteryDrawable.getIntrinsicWidth(), batteryDrawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
                     batteryBitmapCanvas = new Canvas(batteryBitmap);
                     batteryTextPaint = new Paint();

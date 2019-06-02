@@ -7,13 +7,10 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.LayerDrawable;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 
-import androidx.core.content.res.ResourcesCompat;
 import androidx.core.graphics.ColorUtils;
 
 class DynamicArrowView extends View {
@@ -25,8 +22,6 @@ class DynamicArrowView extends View {
     private int innerColor;
     private int outerColor;
     private float opacity = 0;
-    private Drawable selectableBackground;
-    private Drawable backgroundDrawable;
 
     public DynamicArrowView(Context context) {
         this(context, null, 0);
@@ -51,17 +46,6 @@ class DynamicArrowView extends View {
             setOuterScaleFactor(attributeArray.getFloat(R.styleable.DynamicArrowView_outerScaleFactor, 2f));
             setInnerColor(attributeArray.getColor(R.styleable.DynamicArrowView_innerColor, Color.RED));
             setOuterColor(attributeArray.getColor(R.styleable.DynamicArrowView_outerColor, Color.GREEN));
-
-            int id = attributeArray.getResourceId(R.styleable.DynamicArrowView_selectableBackground, -1);
-            if (id != -1) {
-                selectableBackground = ResourcesCompat.getDrawable(getResources(), id, context.getTheme());
-            }
-            id = attributeArray.getResourceId(R.styleable.DynamicArrowView_backgroundDrawable, -1);
-            if (id != -1) {
-                backgroundDrawable = ResourcesCompat.getDrawable(getResources(), id, context.getTheme());
-            }
-
-            constructBackground();
             attributeArray.recycle();
         } catch (Exception e) {
             Log.e(this.toString(), "Attributes initialization error", e);
@@ -111,27 +95,6 @@ class DynamicArrowView extends View {
         va.setDuration(600);
         va.addUpdateListener(animationListener);
         va.start();
-    }
-
-    @SuppressWarnings("unused")
-    public void setSelectableBackground(Drawable drawable) {
-        selectableBackground = drawable;
-        constructBackground();
-    }
-
-    @SuppressWarnings("unused")
-    public void setDrawable(Drawable drawable) {
-        backgroundDrawable = drawable;
-        constructBackground();
-    }
-
-    private void constructBackground() {
-        if (selectableBackground != null) {
-            if (backgroundDrawable != null) {
-                Drawable[] layers = {backgroundDrawable, selectableBackground};
-                setBackgroundDrawable(new LayerDrawable(layers).mutate());      // Both, using layers
-            } else setBackgroundDrawable(selectableBackground);                 // Selectable only
-        } else setBackgroundDrawable(backgroundDrawable);                       // Background only or null
     }
 
     private void recalculatePath()

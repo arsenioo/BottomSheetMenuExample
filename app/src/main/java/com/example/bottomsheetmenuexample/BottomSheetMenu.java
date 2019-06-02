@@ -13,10 +13,16 @@ import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_
 /**
  * Created by apc on 2019-05-15
  */
+interface MenuActivationListener {
+    void onActivated();
+    void onCollapsed();
+}
 
 public class BottomSheetMenu {
     private BottomSheetBehavior bottomSheetBehavior;
     private float lastOffset;
+    private MenuActivationListener activationListener;
+    private int lastBottomSheetState = STATE_COLLAPSED;
 
     BottomSheetMenu(@NonNull View sheetView, @NonNull View persistentMenuView) {
         bottomSheetBehavior = BottomSheetBehavior.from(sheetView);
@@ -51,7 +57,21 @@ public class BottomSheetMenu {
         return lastOffset;
     }
 
-    public void bottomSheetOnStateChanged(View bottomSheet, int newState) {}
+    @SuppressWarnings("WeakerAccess")
+    public void setActivationListener(MenuActivationListener activationListener) {
+        this.activationListener = activationListener;
+    }
+
+    public void bottomSheetOnStateChanged(View bottomSheet, int newState) {
+        if (activationListener != null) {
+            if (lastBottomSheetState == STATE_COLLAPSED && newState != STATE_COLLAPSED) {
+                activationListener.onActivated();
+            } else if (lastBottomSheetState != STATE_COLLAPSED && newState == STATE_COLLAPSED) {
+                activationListener.onCollapsed();
+            }
+        }
+        lastBottomSheetState = newState;
+    }
 
     public void bottomSheetOnSlide(View bottomSheet, float slideOffset) {}
 

@@ -60,7 +60,7 @@
             android:focusable="true"
             android:focusableInTouchMode="false"
             android:visibility="visible"
-            app:backgroundDrawable="@drawable/bg_top_right_rounded"
+            android:background="@drawable/bg_top_right_rounded"
             app:innerColor="@android:color/white"
             app:outerColor="@android:color/black"
             app:innerWidth="2dp"
