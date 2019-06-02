@@ -1,7 +1,6 @@
 package com.example.bottomsheetmenuexample;
 
 import android.annotation.SuppressLint;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -21,6 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
@@ -29,15 +29,24 @@ import java.util.Calendar;
 import java.util.Date;
 
 class SoftickMenu implements MenuActivationListener {
+    private static final int BATTERY_UPDATE_FREQ = 5000;
     private static final int FADE_DELAY = 300;
     private static final float FADED_OPACITY = 0.3f;
-    private final IntentFilter batteryInfoRequest = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
     private Context context;
     private AppCompatButton batteryButton;
     private View exitButton;
     private View persistentMenuView;
 
     private BottomSheetMenu.WithAnimatedGripButton.WithUpperPanel menu;
+
+    private final Runnable batteryInfoUpdater = new Runnable() {
+        private final IntentFilter batteryInfoRequest = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
+        @Override
+        public void run() {
+            updateBatteryItem(context.registerReceiver(null, batteryInfoRequest));
+            batteryButton.postDelayed(batteryInfoUpdater, BATTERY_UPDATE_FREQ);
+        }
+    };
 
     SoftickMenu(@NonNull Context context, @NonNull ViewGroup activityRoot, @NonNull View persistentMenuView)
     {
@@ -57,24 +66,14 @@ class SoftickMenu implements MenuActivationListener {
         batteryButton = activityRoot.findViewById(R.id.batteryButton);
     }
 
-    private final BroadcastReceiver batteryInfoReceiver = new BroadcastReceiver()
-    {
-        @Override
-        public void onReceive(Context context, Intent intent)
-        {
-            String action = intent.getAction();
-            if (Intent.ACTION_BATTERY_CHANGED.equals(action)) updateBatteryItem(intent);
-        }
-    };
-
     @Override
     public void onActivated() {
-        context.registerReceiver(batteryInfoReceiver, batteryInfoRequest);
+        batteryInfoUpdater.run();
     }
 
     @Override
     public void onCollapsed() {
-        context.unregisterReceiver(batteryInfoReceiver);
+        batteryButton.removeCallbacks(batteryInfoUpdater);
     }
 
     @SuppressLint("RtlHardcoded")
@@ -194,7 +193,7 @@ class SoftickMenu implements MenuActivationListener {
         }
     }
 
-    private void updateBatteryItem(Intent batteryInfo) {
+    private void updateBatteryItem(@Nullable Intent batteryInfo) {
         if (batteryInfo == null) return;
         final int level = batteryInfo.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
         final int scale = batteryInfo.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
