@@ -133,64 +133,67 @@ class SoftickMenu implements MenuActivationListener {
         if (!newCaption.equals(batteryIconCaption)) {
             batteryButton.setText(newCaption);
             batteryIconCaption = newCaption;
-            batteryButton.invalidate();
         }
 
-        if (newLevel != batteryLevel || newCharging != batteryCharging) {
-            // Lazy resources loading
-            Drawable batteryDrawable;
-            if (newCharging) {
-                if (batteryChargingDrawable == null) {
-                    batteryChargingDrawable = VectorDrawableCompat.create(context.getResources(), R.drawable.ic_menu_battery_charge, context.getTheme());
-                }
-                batteryDrawable = batteryChargingDrawable;
-            } else {
-                if (batteryDischargingDrawable == null) {
-                    batteryDischargingDrawable = VectorDrawableCompat.create(context.getResources(), R.drawable.ic_menu_battery_base, context.getTheme());
-                }
-                batteryDrawable = batteryDischargingDrawable;
-            }
-            if (batteryDrawable == null) return;
-
-            final float[] hsv = {newLevel * 1.2f, 1.0f, 0.9f};  // Battery color from red to green
-            batteryDrawable.setColorFilter(new PorterDuffColorFilter(Color.HSVToColor(255, hsv), PorterDuff.Mode.SRC_IN));
-
-            if (!newCharging) {
-                if (batteryBitmap == null) {
-                    // Lazy resources loading, part 2
-                    batteryBitmap = Bitmap.createBitmap(batteryDrawable.getIntrinsicWidth(), batteryDrawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
-                    batteryBitmapCanvas = new Canvas(batteryBitmap);
-                    batteryTextPaint = new Paint();
-
-                    final String text = "0";
-                    final float lineHeight = batteryBitmapCanvas.getHeight() * 15.0f / 30.0f * 0.5f;    // Desired height according to drawing dimensions
-                    final float initialTextSize = 24.0f;                                                // Initial text size, any value
-                    batteryTextPaint.setTextSize(initialTextSize);
-                    Rect textBounds = new Rect();
-                    batteryTextPaint.getTextBounds(text, 0, 1, textBounds);
-                    batteryTextPaint.setTextSize(initialTextSize * lineHeight / textBounds.height());  // Final size according to measurements
-                    batteryTextPaint.getTextBounds(text, 0, 1, textBounds);
-
-                    batteryTextPaint.setColor(0xFF000000);
-                    batteryTextPaint.setAntiAlias(true);
-                    batteryTextPaint.setStyle(Paint.Style.FILL);
-                    batteryTextPaint.setTextAlign(Paint.Align.CENTER);
-                    batteryDischargingDrawable.setBounds(0, 0, batteryBitmapCanvas.getWidth(), batteryBitmapCanvas.getHeight());
-                    batteryTextX = batteryBitmap.getWidth() / 2;
-                    batteryTextY = (batteryBitmap.getHeight() + textBounds.height()) / 2;
-                    batteryComposedDrawable = new BitmapDrawable(context.getResources(), batteryBitmap);
-                }
-                else batteryBitmap.eraseColor(0);
-                batteryDischargingDrawable.draw(batteryBitmapCanvas);
-                batteryTextPaint.setTextScaleX(newLevel == 100? 0.75f: 0.95f);
-                batteryBitmapCanvas.drawText(newLevel + "%", batteryTextX, batteryTextY, batteryTextPaint);
-                batteryDrawable = batteryComposedDrawable;
-            }
-            batteryButton.setCompoundDrawablesWithIntrinsicBounds(null, batteryDrawable, null, null);
-            batteryLevel = newLevel;
-            batteryCharging = newCharging;
-            batteryButton.invalidate();
+        if (newLevel == batteryLevel && newCharging == batteryCharging) {
+            //noinspection StringEquality
+            if (batteryIconCaption == newCaption) batteryButton.invalidate();   // Here == only when new caption has been stored
+            return;
         }
+
+        // Lazy resources loading
+        Drawable batteryDrawable;
+        if (newCharging) {
+            if (batteryChargingDrawable == null) {
+                batteryChargingDrawable = VectorDrawableCompat.create(context.getResources(), R.drawable.ic_menu_battery_charge, context.getTheme());
+            }
+            batteryDrawable = batteryChargingDrawable;
+        } else {
+            if (batteryDischargingDrawable == null) {
+                batteryDischargingDrawable = VectorDrawableCompat.create(context.getResources(), R.drawable.ic_menu_battery_base, context.getTheme());
+            }
+            batteryDrawable = batteryDischargingDrawable;
+        }
+        if (batteryDrawable == null) return;
+
+        final float[] hsv = {newLevel * 1.2f, 1.0f, 0.9f};  // Battery color from red to green
+        batteryDrawable.setColorFilter(new PorterDuffColorFilter(Color.HSVToColor(255, hsv), PorterDuff.Mode.SRC_IN));
+
+        if (!newCharging) {     // Display battery percentage
+            if (batteryBitmap == null) {
+                // Lazy resources loading, part 2
+                batteryBitmap = Bitmap.createBitmap(batteryDrawable.getIntrinsicWidth(), batteryDrawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+                batteryBitmapCanvas = new Canvas(batteryBitmap);
+                batteryTextPaint = new Paint();
+
+                final String text = "0";
+                final float lineHeight = batteryBitmapCanvas.getHeight() * 15.0f / 30.0f * 0.5f;    // Desired height according to drawing dimensions
+                final float initialTextSize = 24.0f;                                                // Initial text size, any value
+                batteryTextPaint.setTextSize(initialTextSize);
+                Rect textBounds = new Rect();
+                batteryTextPaint.getTextBounds(text, 0, 1, textBounds);
+                batteryTextPaint.setTextSize(initialTextSize * lineHeight / textBounds.height());  // Final size according to measurements
+                batteryTextPaint.getTextBounds(text, 0, 1, textBounds);
+
+                batteryTextPaint.setColor(0xFF000000);
+                batteryTextPaint.setAntiAlias(true);
+                batteryTextPaint.setStyle(Paint.Style.FILL);
+                batteryTextPaint.setTextAlign(Paint.Align.CENTER);
+                batteryDischargingDrawable.setBounds(0, 0, batteryBitmapCanvas.getWidth(), batteryBitmapCanvas.getHeight());
+                batteryTextX = batteryBitmap.getWidth() / 2;
+                batteryTextY = (batteryBitmap.getHeight() + textBounds.height()) / 2;
+                batteryComposedDrawable = new BitmapDrawable(context.getResources(), batteryBitmap);
+            }
+            else batteryBitmap.eraseColor(0);
+            batteryDischargingDrawable.draw(batteryBitmapCanvas);
+            batteryTextPaint.setTextScaleX(newLevel == 100? 0.75f: 0.95f);
+            batteryBitmapCanvas.drawText(newLevel + "%", batteryTextX, batteryTextY, batteryTextPaint);
+            batteryDrawable = batteryComposedDrawable;
+        }
+        batteryButton.setCompoundDrawablesWithIntrinsicBounds(null, batteryDrawable, null, null);
+        batteryLevel = newLevel;
+        batteryCharging = newCharging;
+        batteryButton.invalidate();
     }
 
     private void updateBatteryItem(@Nullable Intent batteryInfo) {
