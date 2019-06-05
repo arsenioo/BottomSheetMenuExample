@@ -9,10 +9,17 @@
     android:saveEnabled="false"
     android:background="@color/colorPrimaryDark">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello World!"
+    <ImageView
+        android:id="@+id/testView"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:padding="20dp"
+        app:srcCompat="@drawable/ic_test3"
+        android:clickable="true"
+        android:focusable="true"
+        android:onClick="onFifthButtonClick"
+        android:scaleType="fitCenter"
+        android:background="@color/colorPrimary"
         android:layout_gravity="center"/>
 
     <!--Exit button-->
@@ -53,9 +60,6 @@
             android:saveEnabled="false"
             android:layout_width="48dp"
             android:layout_height="40dp"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_above="@+id/buttonsFlex"
             android:clickable="true"
             android:focusable="true"
             android:focusableInTouchMode="false"
@@ -96,7 +100,7 @@
             android:id="@+id/buttonsFlex"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
+            android:layout_below="@id/gripButton"
             android:focusable="true"
             android:focusableInTouchMode="true"
             android:background="@drawable/bg_top_right_rounded"
