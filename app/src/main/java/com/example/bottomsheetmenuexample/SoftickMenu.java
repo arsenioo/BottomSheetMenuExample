@@ -107,6 +107,16 @@ class SoftickMenu implements MenuActivationListener {
         menu.toggle();
     }
 
+    @SuppressWarnings("unused")
+    public boolean isEnabled() {
+        return menu.isEnabled();
+    }
+
+    @SuppressWarnings("unused")
+    public void setEnabled(boolean isEnabled) {
+        menu.setEnabled(isEnabled);
+    }
+
     boolean isActive() {
         return menu.isActive();
     }
