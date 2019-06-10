@@ -23,8 +23,10 @@ public class BottomSheetMenu {
     private float lastOffset;
     private MenuActivationListener activationListener;
     private int lastBottomSheetState = STATE_COLLAPSED;
+    private View sheetView;
 
     BottomSheetMenu(@NonNull View sheetView, @NonNull View persistentMenuView) {
+        this.sheetView = sheetView;
         bottomSheetBehavior = BottomSheetBehavior.from(sheetView);
 
         final BottomSheetCallback bottomSheetCallback = new BottomSheetCallback() {
@@ -75,6 +77,16 @@ public class BottomSheetMenu {
 
     public void bottomSheetOnSlide(View bottomSheet, float slideOffset) {}
 
+    @SuppressWarnings("WeakerAccess")
+    public boolean isEnabled() {
+        return sheetView.getVisibility() == View.VISIBLE;
+    }
+
+    @SuppressWarnings("unused")
+    public void setEnabled(boolean isEnabled) {
+        sheetView.setVisibility(isEnabled? View.VISIBLE: View.INVISIBLE);
+    }
+
     boolean isActive()
     {
         return (bottomSheetBehavior != null && bottomSheetBehavior.getState() == STATE_EXPANDED);
@@ -82,18 +94,20 @@ public class BottomSheetMenu {
 
     public void hide()
     {
-        bottomSheetBehavior.setState(STATE_COLLAPSED);
+        if (isEnabled()) bottomSheetBehavior.setState(STATE_COLLAPSED);
     }
 
     public void show()
     {
-        bottomSheetBehavior.setState(STATE_EXPANDED);
+        if (isEnabled()) bottomSheetBehavior.setState(STATE_EXPANDED);
     }
 
     void toggle()
     {
-        if (isActive()) hide();
-        else show();
+
+        if (isEnabled()) {
+            if (isActive()) hide(); else show();
+        }
     }
 
     public static class WithAnimatedGripButton extends BottomSheetMenu implements View.OnClickListener
